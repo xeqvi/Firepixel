@@ -3,3 +3,13 @@ version: 1.0
 main: net.firepixel.fun.Firepixel
 author: Firepixel
 SoftDepend: [PlaceholderAPI]
+
+commands:
+  setspawn:
+    description: Set the spawn location
+    permission: firepixel.setspawn
+  spawn:
+    description: Teleport to spawn
+  language:
+    description: Open the language menu
+    aliases: [lang]

@@ -20,8 +20,37 @@ The output jar is generated in `target/Firepixel-1.0-SNAPSHOT.jar`.
 
 1. Drop `Firepixel-1.0-SNAPSHOT.jar` into your server `plugins` folder.
 2. Start the server once to generate `plugins/Firepixel/config.yml`.
-3. Edit `config.yml` to choose SQLite or MySQL.
+3. Edit `config.yml` to choose SQLite or MySQL and set the spawn.
 4. Restart the server.
+
+## Commands
+
+| Command    | Description                       | Permission           |
+|------------|-----------------------------------|----------------------|
+| `/setspawn`| Set the spawn to your position    | `firepixel.setspawn` |
+| `/spawn`   | Teleport to the spawn             | -                    |
+
+Commands defined under `spawn.commands` in `config.yml` are registered automatically:
+
+```yaml
+spawn:
+  world: world
+  x: 0.0
+  y: 64.0
+  z: 0.0
+  yaw: 0.0
+  pitch: 0.0
+  commands:
+    hub: /server lobby
+    lobby: /server lobby
+    stuck: /spawn
+```
+
+- `hub` runs `/server lobby`.
+- `lobby` runs `/server lobby`.
+- `stuck` runs `/spawn`.
+
+Each of them sends the player an empty message.
 
 ## Database
 
@@ -53,42 +82,6 @@ Every player row stores:
 | first_join | BIGINT      | First join timestamp         |
 | last_join  | BIGINT      | Most recent join timestamp   |
 
-## How it works
-
-On join, the player is loaded from the database. On quit, their record is saved.
-
-```java
-public class PlayerJoinListener implements Listener {
-
-    private final Firepixel plugin;
-
-    public PlayerJoinListener(Firepixel plugin) {
-        this.plugin = plugin;
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        plugin.getPlayerDataManager().load(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-    }
-}
-```
-
-```java
-public class PlayerQuitListener implements Listener {
-
-    private final Firepixel plugin;
-
-    public PlayerQuitListener(Firepixel plugin) {
-        this.plugin = plugin;
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        plugin.getPlayerDataManager().save(event.getPlayer().getUniqueId());
-    }
-}
-```
-
 The storage backend is chosen at startup by `DatabaseManager`:
 
 ```java
@@ -106,11 +99,100 @@ public void setup() {
 }
 ```
 
-Player data is read and written through `PlayerDataManager`:
+Player data is loaded and saved through `PlayerDataManager`:
 
 ```java
 public PlayerData load(UUID uuid, String name) {
     ...
+}
+
+public void save(UUID uuid) {
+    ...
+}
+```
+
+## Spawn
+
+On join, players are loaded from the database and teleported to the spawn, then receive an empty message.
+
+```java
+@EventHandler
+public void onJoin(PlayerJoinEvent event) {
+    plugin.getPlayerDataManager().load(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+
+    Location spawn = plugin.getSpawnManager().getSpawn();
+
+    if (spawn != null) {
+        event.getPlayer().teleport(spawn);
+    }
+
+    event.getPlayer().sendMessage("");
+}
+```
+
+The spawn is read from and written to `config.yml` by `SpawnManager`:
+
+```java
+public Location getSpawn() {
+    String worldName = plugin.getConfig().getString("spawn.world");
+    World world = Bukkit.getWorld(worldName);
+
+    double x = plugin.getConfig().getDouble("spawn.x");
+    double y = plugin.getConfig().getDouble("spawn.y");
+    double z = plugin.getConfig().getDouble("spawn.z");
+    float yaw = (float) plugin.getConfig().getDouble("spawn.yaw");
+    float pitch = (float) plugin.getConfig().getDouble("spawn.pitch");
+
+    return new Location(world, x, y, z, yaw, pitch);
+}
+
+public void setSpawn(Location location) {
+    plugin.getConfig().set("spawn.world", location.getWorld().getName());
+    plugin.getConfig().set("spawn.x", location.getX());
+    plugin.getConfig().set("spawn.y", location.getY());
+    plugin.getConfig().set("spawn.z", location.getZ());
+    plugin.getConfig().set("spawn.yaw", (double) location.getYaw());
+    plugin.getConfig().set("spawn.pitch", (double) location.getPitch());
+    plugin.saveConfig();
+}
+```
+
+`/setspawn` stores your current location:
+
+```java
+Player player = (Player) sender;
+plugin.getSpawnManager().setSpawn(player.getLocation());
+```
+
+`/spawn` teleports you back:
+
+```java
+Location spawn = plugin.getSpawnManager().getSpawn();
+
+if (spawn != null) {
+    player.teleport(spawn);
+}
+
+player.sendMessage("");
+```
+
+Custom commands from `spawn.commands` are registered at startup and forward to their action:
+
+```java
+ConfigurationSection section = getConfig().getConfigurationSection("spawn.commands");
+
+for (String name : section.getKeys(false)) {
+    String action = section.getString(name);
+    commandMap.register(getName().toLowerCase(), new DynamicCommand(name, action));
+}
+```
+
+```java
+public boolean execute(CommandSender sender, String label, String[] args) {
+    Player player = (Player) sender;
+    player.performCommand(action.startsWith("/") ? action.substring(1) : action);
+    player.sendMessage("");
+    return true;
 }
 ```
 
@@ -119,9 +201,11 @@ public PlayerData load(UUID uuid, String name) {
 ```
 src/main/java/net/firepixel/fun/
   Firepixel.java              Main plugin class
+  command/                    setspawn, spawn, dynamic commands
   database/                   SQLite and MySQL storage
   player/                     Player data model and manager
   listener/                   Join and quit listeners
+  spawn/                      Spawn manager
 src/main/resources/
   config.yml                  Plugin configuration
   plugin.yml                  Plugin descriptor

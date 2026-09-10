@@ -59,7 +59,7 @@ public class MySQLDatabase implements Database {
     public void createTable(String table) {
         try {
             Statement statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + " (uuid VARCHAR(36) PRIMARY KEY, name VARCHAR(16), first_join BIGINT, last_join BIGINT)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + " (uuid VARCHAR(36) PRIMARY KEY, name VARCHAR(16), first_join BIGINT, last_join BIGINT, language VARCHAR(8))");
             statement.close();
         } catch (SQLException exception) {
             exception.printStackTrace();

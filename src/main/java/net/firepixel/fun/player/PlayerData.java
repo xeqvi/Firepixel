@@ -8,12 +8,14 @@ public class PlayerData {
     private String name;
     private long firstJoin;
     private long lastJoin;
+    private String language;
 
-    public PlayerData(UUID uuid, String name, long firstJoin, long lastJoin) {
+    public PlayerData(UUID uuid, String name, long firstJoin, long lastJoin, String language) {
         this.uuid = uuid;
         this.name = name;
         this.firstJoin = firstJoin;
         this.lastJoin = lastJoin;
+        this.language = language;
     }
 
     public UUID getUuid() {
@@ -42,5 +44,13 @@ public class PlayerData {
 
     public void setLastJoin(long lastJoin) {
         this.lastJoin = lastJoin;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

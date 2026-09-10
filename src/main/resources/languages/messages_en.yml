@@ -1,0 +1,13 @@
+language_name: English
+language:
+  menu:
+    title: '&8Select Language'
+    item-lore: '&7Click to select this language.'
+  changed: '&aYou set your language to &6%language%&a!'
+  world-disabled: '&cYou cannot change your language in this world.'
+spawn:
+  set: '&aYou set the spawn location!'
+  no-permission: '&cYou are not allowed to do this!'
+  teleported: '&aTeleported to spawn!'
+  not-set: '&cSpawn is not set!'
+  disabled-world: '&cSpawn is disabled in this world!'
