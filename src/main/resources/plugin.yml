@@ -1,0 +1,5 @@
+name: Firepixel
+version: 1.0
+main: net.firepixel.fun.Firepixel
+author: Firepixel
+SoftDepend: [PlaceholderAPI]

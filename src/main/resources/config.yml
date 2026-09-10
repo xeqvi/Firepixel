@@ -1,0 +1,13 @@
+# Configuration
+
+# Dtabase Configuration:
+database:
+  Storage: sqlite
+  MySQL:
+    hostname: localhost
+    username: root
+    database: minecraft
+    port: '3306'
+    password: password
+    useSSL: false
+  table: firepixel.db
