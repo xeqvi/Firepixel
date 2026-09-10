@@ -6,7 +6,6 @@ import net.firepixel.fun.util.MaterialUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +21,7 @@ public class LanguageMenuManager {
 
     private static final int SIZE = 54;
     private static final int[] LANGUAGE_SLOTS = new int[] {10, 11, 12, 13, 14, 15, 16};
-    private static final int HELP_SLOT = 51;
+    private static final int HELP_SLOT = 50;
     private static final int CLOSE_SLOT = 49;
 
     private static final Map<String, String> LANGUAGE_TEXTURES = new HashMap<String, String>();
@@ -75,7 +74,6 @@ public class LanguageMenuManager {
         }
 
         viewer.openInventory(inventory);
-        playSound(viewer, "NOTE_PLING", "CHICKEN_EGG_POP");
     }
 
     private ItemStack createLanguageHead(String viewerLanguage, String code) {
@@ -151,9 +149,10 @@ public class LanguageMenuManager {
 
         if (lore.isEmpty()) {
             lore = new ArrayList<String>();
-            lore.add("&7Help us add more translations.");
-            lore.add("");
-            lore.add("&eClick this icon for the website link.");
+            lore.add("&7We have added a way for you to help");
+            lore.add("&7us translate Firepixel into even");
+            lore.add("&7more languages!");
+            lore.add("&eClick this icon for the help link.");
         }
 
         List<String> rendered = new ArrayList<String>();
@@ -203,22 +202,5 @@ public class LanguageMenuManager {
         item.setItemMeta(meta);
 
         return item;
-    }
-
-    private void playSound(Player player, String legacyName, String fallbackName) {
-        if (player == null) {
-            return;
-        }
-
-        try {
-            player.playSound(player.getLocation(), Sound.valueOf(legacyName), 1.0f, 1.0f);
-            return;
-        } catch (Throwable ignored) {
-        }
-
-        try {
-            player.playSound(player.getLocation(), Sound.valueOf(fallbackName), 1.0f, 1.0f);
-        } catch (Throwable ignored) {
-        }
     }
 }

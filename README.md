@@ -25,11 +25,13 @@ The output jar is generated in `target/Firepixel-1.0-SNAPSHOT.jar`.
 
 ## Commands
 
-| Command     | Description                    | Permission           |
-|-------------|--------------------------------|----------------------|
-| `/setspawn` | Set the spawn to your position | `firepixel.setspawn` |
-| `/spawn`    | Teleport to the spawn          | -                    |
-| `/language` | Open the language menu         | -                    |
+| Command                        | Description                     | Permission              |
+|--------------------------------|---------------------------------|-------------------------|
+| `/setspawn`                    | Set the spawn to your position  | `firepixel.setspawn`    |
+| `/spawn`                       | Teleport to the spawn           | -                       |
+| `/language`                    | Open the language menu          | -                       |
+| `/language <code>`             | Change your own language        | -                       |
+| `/setlanguage <code> [player]` | Set a player's language         | `firepixel.setlanguage` |
 
 ## Database
 
@@ -140,7 +142,17 @@ language:
     help:
       name: '&aHelp us Translate Firepixel'
       lore:
-      - '&7We have added a way for you to help us translate Firepixel.'
+      - '&7We have added a way for you to help'
+      - '&7us translate Firepixel into even'
+      - '&7more languages!'
+      - '&eClick this icon for the help link.'
+      message:
+      - '&7'
+      - '&a&m------------------------------------------'
+      - '&eClick the link below to find out how to help us translate:'
+      - '&6https://firepixel.fun/translate'
+      - '&a&m------------------------------------------'
+      - '&7'
     close:
       name: '&cClose'
       lore:
@@ -153,13 +165,9 @@ language:
         - '&7Change your language to English.'
         - '&7Click to choose this language.'
   changed: '&aYou set your language to &6%language%&a!'
+  invalid: '&cUnknown language.'
   world-disabled: '&cYou cannot change your language in this world.'
-spawn:
-  set: '&aYou set the spawn location!'
-  no-permission: '&cYou are not allowed to do this!'
-  teleported: '&aTeleported to spawn!'
-  not-set: '&cSpawn is not set!'
-  disabled-world: '&cSpawn is disabled in this world!'
+  player-not-found: '&cPlayer not found.'
 ```
 
 Each language entry uses a player head with a custom texture. The texture falls back to a built-in map when not set in the file.
@@ -193,14 +201,14 @@ public String getMessage(String language, String path) {
 }
 ```
 
-`/language` opens a 54-slot menu with player heads, a help book and a close barrier:
+`/language` opens a 54-slot menu with player heads, a help book in slot 50 and a close barrier in slot 49:
 
 ```java
 public void open(Player viewer) {
     LanguageMenuHolder holder = new LanguageMenuHolder();
     Inventory inventory = Bukkit.createInventory(holder, 54, title);
     inventory.setItem(49, buildCloseItem(viewerLanguage));
-    inventory.setItem(51, buildHelpItem(viewerLanguage));
+    inventory.setItem(50, buildHelpItem(viewerLanguage));
 
     for (int i = 0; i < LANGUAGE_SLOTS.length; i++) {
         String code = supported.get(i);
@@ -218,12 +226,36 @@ SkullMeta meta = (SkullMeta) item.getItemMeta();
 MaterialUtil.applyTexture(meta, texture);
 ```
 
-Clicking a head saves the language, plays a sound and shows a confirmation:
+Clicking a head saves the language, plays `NOTE_PLING` and shows a confirmation:
 
 ```java
 plugin.getPlayerDataManager().setLanguage(player.getUniqueId(), code);
-player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
+player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 player.sendMessage(plugin.getLanguageManager().getMessage(code, "language.changed"));
+```
+
+Clicking the help book sends the translate link message:
+
+```java
+List<String> message = plugin.getLanguageManager().getStringList(language, "language.menu.help.message");
+
+for (String line : message) {
+    player.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
+}
+```
+
+`/language <code>` changes your own language and `/setlanguage <code> [player]` sets another player's language:
+
+```java
+String language = plugin.getLanguageManager().resolveLanguage(args[0]);
+
+if (language == null) {
+    player.sendMessage(plugin.getLanguageManager().getMessage(current, "language.invalid"));
+    return true;
+}
+
+plugin.getPlayerDataManager().setLanguage(player.getUniqueId(), language);
+player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 ```
 
 ## Dependencies
@@ -238,7 +270,7 @@ player.sendMessage(plugin.getLanguageManager().getMessage(code, "language.change
 ```
 src/main/java/net/firepixel/fun/
   Firepixel.java              Main plugin class
-  command/                    setspawn, spawn, language, dynamic commands
+  command/                    setspawn, spawn, language, setlanguage, dynamic commands
   database/                   SQLite and MySQL storage
   player/                     Player data model
   listener/                   Join, quit and language menu listeners

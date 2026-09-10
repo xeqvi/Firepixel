@@ -1,6 +1,7 @@
 package net.firepixel.fun.command;
 
 import net.firepixel.fun.Firepixel;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,14 +22,31 @@ public class LanguageCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
+        String current = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
 
         if (!plugin.getLanguageManager().isEnabledForWorld(player.getWorld().getName())) {
-            player.sendMessage(plugin.getLanguageManager().getMessage(language, "language.world-disabled"));
+            player.sendMessage(plugin.getLanguageManager().getMessage(current, "language.world-disabled"));
             return true;
         }
 
-        plugin.getLanguageMenuManager().open(player);
+        if (args.length == 0) {
+            plugin.getLanguageMenuManager().open(player);
+            return true;
+        }
+
+        String language = plugin.getLanguageManager().resolveLanguage(args[0]);
+
+        if (language == null) {
+            player.sendMessage(plugin.getLanguageManager().getMessage(current, "language.invalid"));
+            return true;
+        }
+
+        plugin.getPlayerDataManager().setLanguage(player.getUniqueId(), language);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+
+        String message = plugin.getLanguageManager().getMessage(language, "language.changed");
+        message = message.replace("%language%", plugin.getLanguageManager().getLanguageName(language));
+        player.sendMessage(message);
 
         return true;
     }

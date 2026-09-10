@@ -10,9 +10,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.util.List;
+
 public class LanguageMenuListener implements Listener {
 
     private static final int CLOSE_SLOT = 49;
+    private static final int HELP_SLOT = 50;
 
     private final Firepixel plugin;
 
@@ -55,6 +58,17 @@ public class LanguageMenuListener implements Listener {
             return;
         }
 
+        if (slot == HELP_SLOT) {
+            String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
+            List<String> message = plugin.getLanguageManager().getStringList(language, "language.menu.help.message");
+
+            for (String line : message) {
+                player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&', line));
+            }
+
+            return;
+        }
+
         String code = ((LanguageMenuHolder) holder).getLanguage(slot);
 
         if (code == null) {
@@ -68,7 +82,7 @@ public class LanguageMenuListener implements Listener {
         message = message.replace("%language%", plugin.getLanguageManager().getLanguageName(code));
         player.sendMessage(message);
 
-        playSound(player);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
     @EventHandler
@@ -76,23 +90,6 @@ public class LanguageMenuListener implements Listener {
         if (event.getView() != null && event.getView().getTopInventory() != null
                 && event.getView().getTopInventory().getHolder() instanceof LanguageMenuHolder) {
             event.setCancelled(true);
-        }
-    }
-
-    private void playSound(Player player) {
-        if (player == null) {
-            return;
-        }
-
-        try {
-            player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
-            return;
-        } catch (Throwable ignored) {
-        }
-
-        try {
-            player.playSound(player.getLocation(), Sound.valueOf("CHICKEN_EGG_POP"), 1.0f, 1.0f);
-        } catch (Throwable ignored) {
         }
     }
 }

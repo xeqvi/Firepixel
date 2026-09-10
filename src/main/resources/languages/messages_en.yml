@@ -6,9 +6,17 @@ language:
     help:
       name: '&aHelp us Translate Firepixel'
       lore:
-      - '&7We have added a way for you to help us translate Firepixel into even more languages!'
+      - '&7We have added a way for you to help'
+      - '&7us translate Firepixel into even'
+      - '&7more languages!'
+      - '&eClick this icon for the help link.'
+      message:
       - '&7'
-      - '&eClick this icon for the website link.'
+      - '&a&m------------------------------------------'
+      - '&eClick the link below to find out how to help us translate:'
+      - '&6https://firepixel.fun/translate'
+      - '&a&m------------------------------------------'
+      - '&7'
     close:
       name: '&cClose'
       lore:
@@ -29,7 +37,10 @@ language:
         - '&7'
         - '&7Click to choose this language.'
   changed: '&aYou set your language to &6%language%&a!'
+  invalid: '&cUnknown language.'
   world-disabled: '&cYou cannot change your language in this world.'
+  player-not-found: '&cPlayer not found.'
+  player-only: '&cPlayers only.'
 
 spawn:
   set: '&aYou set the spawn location!'

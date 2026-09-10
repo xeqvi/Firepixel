@@ -11,5 +11,8 @@ commands:
   spawn:
     description: Teleport to spawn
   language:
-    description: Open the language menu
+    description: Open the language menu or change your language
     aliases: [lang]
+  setlanguage:
+    description: Set a player's language
+    permission: firepixel.setlanguage

@@ -2,6 +2,7 @@ package net.firepixel.fun;
 
 import net.firepixel.fun.command.DynamicCommand;
 import net.firepixel.fun.command.LanguageCommand;
+import net.firepixel.fun.command.SetLanguageCommand;
 import net.firepixel.fun.command.SetSpawnCommand;
 import net.firepixel.fun.command.SpawnCommand;
 import net.firepixel.fun.listener.LanguageMenuListener;
@@ -45,6 +46,7 @@ public class Firepixel extends JavaPlugin {
         getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
         getCommand("spawn").setExecutor(new SpawnCommand(this));
         getCommand("language").setExecutor(new LanguageCommand(this));
+        getCommand("setlanguage").setExecutor(new SetLanguageCommand(this));
 
         registerSpawnCommands();
 
