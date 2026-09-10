@@ -3,13 +3,37 @@ language_name: English
 language:
   menu:
     title: '&8Select Language'
-    item-lore: '&7Click to select this language.'
+    help:
+      name: '&aHelp us Translate Firepixel'
+      lore:
+      - '&7We have added a way for you to help us translate Firepixel into even more languages!'
+      - '&7'
+      - '&eClick this icon for the website link.'
+    close:
+      name: '&cClose'
+      lore:
+      - '&7Close the menu.'
+      - '&7'
+      - '&eClick to close.'
+    items:
+      en:
+        name: '&aEnglish'
+        texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNhYzk3NzRkYTEyMTcyNDg1MzJjZTE0N2Y3ODMxZjY3YTEyZmRjY2ExY2YwY2I0YjM4NDhkZTZiYzk0YjQifX19'
+        lore:
+        - '&7Change your language to English.'
+        - '&7'
+        - '&7Currently available:'
+        - '&7• &fMain Lobby'
+        - '&7• &fBed Wars'
+        - '&7• &fDuels'
+        - '&7'
+        - '&7Click to choose this language.'
   changed: '&aYou set your language to &6%language%&a!'
   world-disabled: '&cYou cannot change your language in this world.'
 
 spawn:
   set: '&aYou set the spawn location!'
   no-permission: '&cYou are not allowed to do this!'
-  teleported: '&aTeleported to spawn!'
+  teleported: ''
   not-set: '&cSpawn is not set!'
   disabled-world: '&cSpawn is disabled in this world!'

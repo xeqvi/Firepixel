@@ -137,7 +137,21 @@ language_name: English
 language:
   menu:
     title: '&8Select Language'
-    item-lore: '&7Click to select this language.'
+    help:
+      name: '&aHelp us Translate Firepixel'
+      lore:
+      - '&7We have added a way for you to help us translate Firepixel.'
+    close:
+      name: '&cClose'
+      lore:
+      - '&7Close the menu.'
+    items:
+      en:
+        name: '&aEnglish'
+        texture: 'eyJ0ZXh0dXJlcyI6...'
+        lore:
+        - '&7Change your language to English.'
+        - '&7Click to choose this language.'
   changed: '&aYou set your language to &6%language%&a!'
   world-disabled: '&cYou cannot change your language in this world.'
 spawn:
@@ -147,6 +161,8 @@ spawn:
   not-set: '&cSpawn is not set!'
   disabled-world: '&cSpawn is disabled in this world!'
 ```
+
+Each language entry uses a player head with a custom texture. The texture falls back to a built-in map when not set in the file.
 
 The language section in `config.yml`:
 
@@ -160,7 +176,7 @@ language:
 - `disabled_language_worlds` lists worlds where the language menu cannot be opened.
 - Every supported language file is detected automatically from the `languages` folder.
 
-`LanguageManager` loads the files and returns colored messages:
+`LanguageManager` loads the files and returns colored messages and lists:
 
 ```java
 public void reload() {
@@ -177,26 +193,45 @@ public String getMessage(String language, String path) {
 }
 ```
 
-`/language` opens a menu built from the loaded languages:
+`/language` opens a 54-slot menu with player heads, a help book and a close barrier:
 
 ```java
-public void open(Player player) {
+public void open(Player viewer) {
     LanguageMenuHolder holder = new LanguageMenuHolder();
-    Inventory inventory = Bukkit.createInventory(holder, 27, title);
+    Inventory inventory = Bukkit.createInventory(holder, 54, title);
+    inventory.setItem(49, buildCloseItem(viewerLanguage));
+    inventory.setItem(51, buildHelpItem(viewerLanguage));
 
-    for (String code : plugin.getLanguageManager().getSupportedLanguages()) {
-        ...
-        holder.setLanguage(slot, code);
+    for (int i = 0; i < LANGUAGE_SLOTS.length; i++) {
+        String code = supported.get(i);
+        inventory.setItem(LANGUAGE_SLOTS[i], createLanguageHead(viewerLanguage, code));
+        holder.setLanguage(LANGUAGE_SLOTS[i], code);
     }
 }
 ```
 
-Clicking an item saves the language and shows a confirmation:
+Heads are built through `MaterialUtil`, which applies a base64 texture via `authlib`:
+
+```java
+ItemStack item = MaterialUtil.createSkull();
+SkullMeta meta = (SkullMeta) item.getItemMeta();
+MaterialUtil.applyTexture(meta, texture);
+```
+
+Clicking a head saves the language, plays a sound and shows a confirmation:
 
 ```java
 plugin.getPlayerDataManager().setLanguage(player.getUniqueId(), code);
+player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
 player.sendMessage(plugin.getLanguageManager().getMessage(code, "language.changed"));
 ```
+
+## Dependencies
+
+- `spigot-api` 1.8.8
+- `bungeecord-chat`
+- `mysql-connector-j` and `sqlite-jdbc`
+- `authlib` (provided) for player head textures
 
 ## Project structure
 
@@ -207,8 +242,9 @@ src/main/java/net/firepixel/fun/
   database/                   SQLite and MySQL storage
   player/                     Player data model
   listener/                   Join, quit and language menu listeners
-  manager/                    Database, player data, spawn, language managers
+  manager/                    Database, player data, spawn, language, menu managers
   menu/                       Language menu holder
+  util/                       Material and skull texture utilities
 src/main/resources/
   config.yml                  Plugin configuration
   plugin.yml                  Plugin descriptor

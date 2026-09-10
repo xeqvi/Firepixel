@@ -152,6 +152,28 @@ public class LanguageManager {
         return "";
     }
 
+    public List<String> getStringList(String language, String path) {
+        String key = resolveLanguage(language);
+
+        if (key == null) {
+            key = getDefaultLanguage();
+        }
+
+        YamlConfiguration config = languages.get(key);
+
+        if (config != null && config.contains(path)) {
+            return new ArrayList<String>(config.getStringList(path));
+        }
+
+        YamlConfiguration fallback = languages.get(getDefaultLanguage());
+
+        if (fallback != null && fallback.contains(path)) {
+            return new ArrayList<String>(fallback.getStringList(path));
+        }
+
+        return new ArrayList<String>();
+    }
+
     public boolean isEnabledForWorld(String worldName) {
         List<String> disabled = plugin.getConfig().getStringList("language.disabled_language_worlds");
 

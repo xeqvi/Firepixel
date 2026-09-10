@@ -19,6 +19,10 @@ public class LanguageMenuHolder implements InventoryHolder {
         return slots.get(slot);
     }
 
+    public Map<Integer, String> getSlots() {
+        return slots;
+    }
+
     @Override
     public Inventory getInventory() {
         return inventory;
