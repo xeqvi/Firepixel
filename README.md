@@ -19,38 +19,17 @@ The output jar is generated in `target/Firepixel-1.0-SNAPSHOT.jar`.
 ## Installation
 
 1. Drop `Firepixel-1.0-SNAPSHOT.jar` into your server `plugins` folder.
-2. Start the server once to generate `plugins/Firepixel/config.yml`.
-3. Edit `config.yml` to choose SQLite or MySQL and set the spawn.
+2. Start the server once to generate `plugins/Firepixel/config.yml` and `plugins/Firepixel/languages/`.
+3. Edit `config.yml` to choose SQLite or MySQL, set the spawn and the language settings.
 4. Restart the server.
 
 ## Commands
 
-| Command    | Description                       | Permission           |
-|------------|-----------------------------------|----------------------|
-| `/setspawn`| Set the spawn to your position    | `firepixel.setspawn` |
-| `/spawn`   | Teleport to the spawn             | -                    |
-
-Commands defined under `spawn.commands` in `config.yml` are registered automatically:
-
-```yaml
-spawn:
-  world: world
-  x: 0.0
-  y: 64.0
-  z: 0.0
-  yaw: 0.0
-  pitch: 0.0
-  commands:
-    hub: /server lobby
-    lobby: /server lobby
-    stuck: /spawn
-```
-
-- `hub` runs `/server lobby`.
-- `lobby` runs `/server lobby`.
-- `stuck` runs `/spawn`.
-
-Each of them sends the player an empty message.
+| Command     | Description                    | Permission           |
+|-------------|--------------------------------|----------------------|
+| `/setspawn` | Set the spawn to your position | `firepixel.setspawn` |
+| `/spawn`    | Teleport to the spawn          | -                    |
+| `/language` | Open the language menu         | -                    |
 
 ## Database
 
@@ -81,23 +60,7 @@ Every player row stores:
 | name       | VARCHAR(16) | Last known player name       |
 | first_join | BIGINT      | First join timestamp         |
 | last_join  | BIGINT      | Most recent join timestamp   |
-
-The storage backend is chosen at startup by `DatabaseManager`:
-
-```java
-public void setup() {
-    String type = plugin.getConfig().getString("database.Storage", "sqlite");
-
-    if (type.equalsIgnoreCase("mysql")) {
-        database = new MySQLDatabase(plugin);
-    } else {
-        database = new SQLiteDatabase(plugin);
-    }
-
-    database.connect();
-    database.createTable("firepixel_players");
-}
-```
+| language   | VARCHAR(8)  | Selected language code       |
 
 Player data is loaded and saved through `PlayerDataManager`:
 
@@ -113,87 +76,126 @@ public void save(UUID uuid) {
 
 ## Spawn
 
-On join, players are loaded from the database and teleported to the spawn, then receive an empty message.
+The spawn section controls where players are teleported:
+
+```yaml
+spawn:
+  world: world
+  x: 0.0
+  y: 64.0
+  z: 0.0
+  yaw: 0.0
+  pitch: 0.0
+  enabled_spawn_worlds:
+  - world
+  commands:
+    hub: /server lobby
+    lobby: /server lobby
+    stuck: /spawn
+```
+
+- `enabled_spawn_worlds` lists the worlds where joining players are sent to spawn.
+- Commands under `spawn.commands` are registered automatically and forward to their action.
+
+On join, players are loaded from the database and teleported to spawn if their world is enabled:
 
 ```java
 @EventHandler
 public void onJoin(PlayerJoinEvent event) {
     plugin.getPlayerDataManager().load(event.getPlayer().getUniqueId(), event.getPlayer().getName());
 
+    if (!plugin.getSpawnManager().isEnabledForWorld(event.getPlayer().getWorld().getName())) {
+        return;
+    }
+
     Location spawn = plugin.getSpawnManager().getSpawn();
 
     if (spawn != null) {
         event.getPlayer().teleport(spawn);
     }
-
-    event.getPlayer().sendMessage("");
 }
 ```
 
-The spawn is read from and written to `config.yml` by `SpawnManager`:
+`/setspawn` checks the permission and sends a language message:
 
 ```java
-public Location getSpawn() {
-    String worldName = plugin.getConfig().getString("spawn.world");
-    World world = Bukkit.getWorld(worldName);
-
-    double x = plugin.getConfig().getDouble("spawn.x");
-    double y = plugin.getConfig().getDouble("spawn.y");
-    double z = plugin.getConfig().getDouble("spawn.z");
-    float yaw = (float) plugin.getConfig().getDouble("spawn.yaw");
-    float pitch = (float) plugin.getConfig().getDouble("spawn.pitch");
-
-    return new Location(world, x, y, z, yaw, pitch);
-}
-
-public void setSpawn(Location location) {
-    plugin.getConfig().set("spawn.world", location.getWorld().getName());
-    plugin.getConfig().set("spawn.x", location.getX());
-    plugin.getConfig().set("spawn.y", location.getY());
-    plugin.getConfig().set("spawn.z", location.getZ());
-    plugin.getConfig().set("spawn.yaw", (double) location.getYaw());
-    plugin.getConfig().set("spawn.pitch", (double) location.getPitch());
-    plugin.saveConfig();
-}
-```
-
-`/setspawn` stores your current location:
-
-```java
-Player player = (Player) sender;
-plugin.getSpawnManager().setSpawn(player.getLocation());
-```
-
-`/spawn` teleports you back:
-
-```java
-Location spawn = plugin.getSpawnManager().getSpawn();
-
-if (spawn != null) {
-    player.teleport(spawn);
-}
-
-player.sendMessage("");
-```
-
-Custom commands from `spawn.commands` are registered at startup and forward to their action:
-
-```java
-ConfigurationSection section = getConfig().getConfigurationSection("spawn.commands");
-
-for (String name : section.getKeys(false)) {
-    String action = section.getString(name);
-    commandMap.register(getName().toLowerCase(), new DynamicCommand(name, action));
-}
-```
-
-```java
-public boolean execute(CommandSender sender, String label, String[] args) {
-    Player player = (Player) sender;
-    player.performCommand(action.startsWith("/") ? action.substring(1) : action);
-    player.sendMessage("");
+if (!player.hasPermission("firepixel.setspawn")) {
+    player.sendMessage(plugin.getLanguageManager().getMessage(language, "spawn.no-permission"));
     return true;
 }
+
+plugin.getSpawnManager().setSpawn(player.getLocation());
+player.sendMessage(plugin.getLanguageManager().getMessage(language, "spawn.set"));
+```
+
+## Languages
+
+Language files live in `plugins/Firepixel/languages/messages_<code>.yml`. Each file starts with its display name:
+
+```yaml
+language_name: English
+language:
+  menu:
+    title: '&8Select Language'
+    item-lore: '&7Click to select this language.'
+  changed: '&aYou set your language to &6%language%&a!'
+  world-disabled: '&cYou cannot change your language in this world.'
+spawn:
+  set: '&aYou set the spawn location!'
+  no-permission: '&cYou are not allowed to do this!'
+  teleported: '&aTeleported to spawn!'
+  not-set: '&cSpawn is not set!'
+  disabled-world: '&cSpawn is disabled in this world!'
+```
+
+The language section in `config.yml`:
+
+```yaml
+language:
+  default-language: en
+  disabled_language_worlds:
+  - test
+```
+
+- `disabled_language_worlds` lists worlds where the language menu cannot be opened.
+- Every supported language file is detected automatically from the `languages` folder.
+
+`LanguageManager` loads the files and returns colored messages:
+
+```java
+public void reload() {
+    languages.clear();
+    File folder = new File(plugin.getDataFolder(), "languages");
+    plugin.saveResource("languages/messages_en.yml", false);
+    ...
+}
+
+public String getMessage(String language, String path) {
+    YamlConfiguration config = languages.get(resolveLanguage(language));
+    String value = config.getString(path);
+    return ChatColor.translateAlternateColorCodes('&', value);
+}
+```
+
+`/language` opens a menu built from the loaded languages:
+
+```java
+public void open(Player player) {
+    LanguageMenuHolder holder = new LanguageMenuHolder();
+    Inventory inventory = Bukkit.createInventory(holder, 27, title);
+
+    for (String code : plugin.getLanguageManager().getSupportedLanguages()) {
+        ...
+        holder.setLanguage(slot, code);
+    }
+}
+```
+
+Clicking an item saves the language and shows a confirmation:
+
+```java
+plugin.getPlayerDataManager().setLanguage(player.getUniqueId(), code);
+player.sendMessage(plugin.getLanguageManager().getMessage(code, "language.changed"));
 ```
 
 ## Project structure
@@ -201,12 +203,14 @@ public boolean execute(CommandSender sender, String label, String[] args) {
 ```
 src/main/java/net/firepixel/fun/
   Firepixel.java              Main plugin class
-  command/                    setspawn, spawn, dynamic commands
+  command/                    setspawn, spawn, language, dynamic commands
   database/                   SQLite and MySQL storage
-  player/                     Player data model and manager
-  listener/                   Join and quit listeners
-  spawn/                      Spawn manager
+  player/                     Player data model
+  listener/                   Join, quit and language menu listeners
+  manager/                    Database, player data, spawn, language managers
+  menu/                       Language menu holder
 src/main/resources/
   config.yml                  Plugin configuration
   plugin.yml                  Plugin descriptor
+  languages/                  Language files
 ```
