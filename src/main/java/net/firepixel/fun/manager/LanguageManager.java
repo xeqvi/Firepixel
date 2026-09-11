@@ -174,6 +174,55 @@ public class LanguageManager {
         return new ArrayList<String>();
     }
 
+    public String getString(String language, String path, String def) {
+        String value = getMessage(language, path);
+        return value == null || value.trim().isEmpty() ? def : value;
+    }
+
+    public int getInt(String language, String path, int def) {
+        String key = resolveLanguage(language);
+
+        if (key == null) {
+            key = getDefaultLanguage();
+        }
+
+        YamlConfiguration config = languages.get(key);
+
+        if (config != null && config.contains(path)) {
+            return config.getInt(path, def);
+        }
+
+        YamlConfiguration fallback = languages.get(getDefaultLanguage());
+
+        if (fallback != null && fallback.contains(path)) {
+            return fallback.getInt(path, def);
+        }
+
+        return def;
+    }
+
+    public java.util.Set<String> getKeys(String language, String path) {
+        String key = resolveLanguage(language);
+
+        if (key == null) {
+            key = getDefaultLanguage();
+        }
+
+        YamlConfiguration config = languages.get(key);
+
+        if (config != null && config.isConfigurationSection(path)) {
+            return config.getConfigurationSection(path).getKeys(false);
+        }
+
+        YamlConfiguration fallback = languages.get(getDefaultLanguage());
+
+        if (fallback != null && fallback.isConfigurationSection(path)) {
+            return fallback.getConfigurationSection(path).getKeys(false);
+        }
+
+        return new java.util.LinkedHashSet<String>();
+    }
+
     public boolean isEnabledForWorld(String worldName) {
         List<String> disabled = plugin.getConfig().getStringList("language.disabled_language_worlds");
 

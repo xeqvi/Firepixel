@@ -48,3 +48,194 @@ spawn:
   teleported: ''
   not-set: '&cSpawn is not set!'
   disabled-world: '&cSpawn is disabled in this world!'
+
+join-message:
+  hover_text:
+  - '%rank%%player%'
+  - '&7Firepixel Level: &30'
+  - '&7Achievements Points: &e0'
+  - '&7Guild: &bNone'
+  ranks:
+    owner:
+      permission: joinmessages.owner
+      message: '&b>&c>&a> &c[OWNER] %player% &6slid into the lobby! &a<&c<&b<'
+    coowner:
+      permission: joinmessages.coowner
+      message: '&b>&c>&a> &c[CO OWNER] %player% &6slid into the lobby! &a<&c<&b<'
+    founder:
+      permission: joinmessages.founder
+      message: '&b>&c>&a> &c[FOUNDER] %player% &6slid into the lobby! &a<&c<&b<'
+    mainadmin:
+      permission: joinmessages.mainadmin
+      message: '&b>&c>&a> &c[MAIN ADMIN] %player% &6slid into the lobby! &a<&c<&b<'
+    admin:
+      permission: joinmessages.admin
+      message: '&b>&c>&a> &c[ADMIN] %player% &6slid into the lobby! &a<&c<&b<'
+    mod:
+      permission: joinmessages.mod
+      message: '&b>&c>&a> &2[MOD] %player% &6slid into the lobby! &a<&c<&b<'
+    gm:
+      permission: joinmessages.gm
+      message: '&b>&c>&a> &2[GM] %player% &6slid into the lobby! &a<&c<&b<'
+    helper:
+      permission: joinmessages.helper
+      message: '&b>&c>&a> &9[HELPER] %player% &6slid into the lobby! &a<&c<&b<'
+    jrhelper:
+      permission: joinmessages.jrhelper
+      message: '&b>&c>&a> &9[JR HELPER] %player% &6slid into the lobby! &a<&c<&b<'
+    youtube:
+      permission: joinmessages.youtube
+      message: '&b>&c>&a> &c[&fYOUTUBE&c] %player% &6slid into the lobby! &a<&c<&b<'
+    mvpplusplus:
+      permission: joinmessages.mvpplusplus
+      message: '&b>&c>&a> %rank%%player% &6slid in the lobby! &a<&c<&b<'
+    mvpplus:
+      permission: joinmessages.mvpplus
+      message: '%rank%%player% &6slid in the lobby!'
+    mvp:
+      permission: joinmessages.mvp
+      message: '&b[MVP] %player% &6slid in the lobby!'
+    vipplus:
+      permission: joinmessages.vipplus
+      message: '&a[VIP&6+&a] %player% &6slid in the lobby!'
+    vip:
+      permission: joinmessages.vip
+      message: '&a[VIP] %player% &6slid in the lobby!'
+
+report:
+  usage: '&cUsage: /report <player>'
+  self: '&cYou can''t report yourself!'
+  player-only: '&cThis command can only be used by players!'
+  no-permission: '&cYou don''t have permission for that!'
+  cooldown: '&cPlease wait &e%seconds% &cseconds before reporting again.'
+  player-not-found: '&cPlayer not found.'
+  no-players: '&cThere are no players to report right now.'
+  cancelled: '&cReport cancelled.'
+  submitted:
+  - '&aThanks for your %reason% report. We understand your concerns and it will be reviewed as soon as possible.'
+  - '&cWarning! Abuse of this command is punishable.'
+  staff-notify: '&b[STAFF] &c[REPORT] &e%reporter% &ahas reported &e%reported% &afor &e[%reason%]'
+  accepted: '&aYour report against &e%reported% &ahas been addressed! Thanks for your help!'
+  menu:
+    reason-title: '&8Report'
+    player-title: '&8Select a Player'
+    confirm-title: '&8Confirm Report'
+    info:
+      name: '&aUse this menu to report a player for breaking our rules'
+      lore:
+      - '&7Hover over the specific report type'
+      - '&7for detailed information and then'
+      - '&7select the closest option for the'
+      - '&7rules being broken.'
+      - '&7'
+      - '&7Visit &bhttps://firepixel.fun/rules &7for'
+      - '&7more information.'
+    close:
+      name: '&cClose'
+    submit:
+      name: '&aSubmit Report'
+    cancel:
+      name: '&cCancel Report'
+    abuse-warning: '&cAbuse may result in punishment!'
+    reasons:
+      chat_abuse:
+        slot: 20
+        material: BOOK_AND_QUILL
+        data: 0
+        name: '&aChat Abuse'
+        lore:
+        - '&7Report players for abusive chat.'
+        - '&7'
+        - '&eClick to Select!'
+      cheating:
+        slot: 21
+        material: DIAMOND_SWORD
+        data: 0
+        name: '&aCheating (Hacks)'
+        lore:
+        - '&7Report players for cheating.'
+        - '&7'
+        - '&eClick to Select!'
+      bad_name:
+        slot: 22
+        material: PAPER
+        data: 0
+        name: '&aBad Name'
+        lore:
+        - '&7Report players with inappropriate names.'
+        - '&7'
+        - '&eClick to Select!'
+      bad_skin:
+        slot: 23
+        material: BANNER
+        data: 2
+        name: '&aBad Skin'
+        lore:
+        - '&7Report players with inappropriate skins.'
+        - '&7'
+        - '&eClick to Select!'
+      other:
+        slot: 24
+        material: COMPASS
+        data: 0
+        name: '&aOther'
+        lore:
+        - '&7Report players for another issue.'
+        - '&7'
+        - '&eClick to Select!'
+      bug_abuse:
+        slot: 29
+        material: LEATHER
+        data: 0
+        name: '&aBug Abuse'
+        lore:
+        - '&7Report players for bug abuse.'
+        - '&7'
+        - '&eClick to Select!'
+      pet_name:
+        slot: 30
+        material: MONSTER_EGG
+        data: 92
+        name: '&aBad Pet name'
+        lore:
+        - '&7Report players with inappropriate pet names.'
+        - '&7'
+        - '&eClick to Select!'
+      boosting:
+        slot: 31
+        material: TNT
+        data: 0
+        name: '&aBoosting / Exploits'
+        lore:
+        - '&7Report players for boosting or exploits.'
+        - '&7'
+        - '&eClick to Select!'
+
+punishments:
+  already-banned: '&c%player% is already banned!'
+  banned: '&c%player% was successfully banned!'
+  banned-broadcast: '&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% permanently'
+  temp-banned: '&c%player% was successfully temp-banned for &e%duration%&7!'
+  temp-banned-broadcast: '&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% For &f%duration%'
+  muted: '&c%player% was successfully muted!'
+  already-muted: '&c%player% is already muted!'
+  muted-broadcast: '&c&l&n%player% &cgot muted permanently by &l%staff% &cFor %reason%'
+  temp-muted: '&c%player% was successfully temp-muted for &e%duration%&7!'
+  temp-muted-broadcast: '&c&l&n%player% &cgot muted by &l%staff% &cFor %reason% For &f%duration%'
+  warned: '&c%player% was successfully warned!'
+  warned-broadcast: '&c&l&n%player% &cgot warned by &l%staff% &cFor the reason %reason%'
+  kicked: '&c%player% was successfully kicked!'
+  kicked-broadcast: '&c&l&n%player% &cgot kicked by &l%staff%'
+  unbanned: '&a%player% was successfully unbanned!'
+  unbanned-broadcast: '&e&o%staff% &7unbanned &c&o%player%'
+  not-banned: '&c%player% is not banned!'
+  unmuted: '&a%player% was successfully unmuted!'
+  unmuted-broadcast: '&e&o%staff% &7unmuted &c&o%player%'
+  not-muted: '&c%player% is not muted!'
+  invalid-duration: '&cInvalid duration format. Use 30s, 10m, 2h, 1d.'
+  no-permission: '&cYou don''t have permission for that!'
+  screens:
+    ban: '&cYou are permanently banned from this server!\n&7\n&7Reason: &f%reason%\n&7Find out more: &b&n%appeal%\n&7\n&7Ban ID: &f#0001\n&7Sharing your Ban ID may affect the processing of your appeal'
+    tempban: '&cYou are temporarily banned for &f%duration% &cfrom this server!\n&7\n&7Reason: &f%reason%\n&7Find out more: &b&n%appeal%\n&7\n&7Ban ID: &f#0001\n&7Sharing your Ban ID may affect the processing of your appeal'
+    kick: '&cYou got kicked from this server!\n&7\n&7Reason: &l%reason%'
+    mute: '&cYou are muted!'

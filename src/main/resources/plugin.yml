@@ -2,7 +2,7 @@ name: Firepixel
 version: 1.0
 main: net.firepixel.fun.Firepixel
 author: Firepixel
-SoftDepend: [PlaceholderAPI]
+SoftDepend: [PlaceholderAPI, LuckPerms]
 
 commands:
   setspawn:
@@ -16,3 +16,89 @@ commands:
   setlanguage:
     description: Set a player's language
     permission: firepixel.setlanguage
+  report:
+    description: Report a player
+    aliases: [creport, watchdogreport, wreport]
+  reportaccept:
+    description: Accept a pending report
+    aliases: [watchdogreport-accept, reportaccept]
+  ban:
+    description: Permanently ban a player
+    aliases: [wban]
+  tempban:
+    description: Temporarily ban a player
+    aliases: [wtempban, tban]
+  mute:
+    description: Permanently mute a player
+    aliases: [wmute]
+  tempmute:
+    description: Temporarily mute a player
+    aliases: [wtempmute, tmute]
+  warn:
+    description: Warn a player
+    aliases: [wwarn]
+  kick:
+    description: Kick a player
+    aliases: [wkick]
+  unban:
+    description: Unban a player
+    aliases: [pardon]
+  unmute:
+    description: Unmute a player
+    aliases: [unmuteplayer]
+
+permissions:
+  firepixel.setspawn:
+    default: op
+  firepixel.setlanguage:
+    default: op
+  firepixel.report.staff:
+    default: op
+  firepixel.staff:
+    default: op
+  firepixel.punishment.ban:
+    default: op
+  firepixel.punishment.tempban:
+    default: op
+  firepixel.punishment.mute:
+    default: op
+  firepixel.punishment.tempmute:
+    default: op
+  firepixel.punishment.warn:
+    default: op
+  firepixel.punishment.kick:
+    default: op
+  firepixel.punishment.unban:
+    default: op
+  firepixel.punishment.unmute:
+    default: op
+  joinmessages.owner:
+    default: op
+  joinmessages.coowner:
+    default: op
+  joinmessages.founder:
+    default: op
+  joinmessages.mainadmin:
+    default: op
+  joinmessages.admin:
+    default: op
+  joinmessages.mod:
+    default: op
+  joinmessages.gm:
+    default: op
+  joinmessages.helper:
+    default: op
+  joinmessages.jrhelper:
+    default: op
+  joinmessages.youtube:
+    default: op
+  joinmessages.mvpplusplus:
+    default: false
+  joinmessages.mvpplus:
+    default: false
+  joinmessages.mvp:
+    default: false
+  joinmessages.vipplus:
+    default: false
+  joinmessages.vip:
+    default: false

@@ -32,3 +32,15 @@ language:
   default-language: en
   disabled_language_worlds:
   - test
+
+# Join Messages
+join-message:
+  enabled: true
+  default: ''
+  click_command: '/viewprofile %player%'
+
+# Report
+report:
+  cooldown-seconds: 60
+  staff-permission: firepixel.report.staff
+  appeal-link: https://firepixel.fun/appeal
