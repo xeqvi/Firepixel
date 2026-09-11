@@ -135,9 +135,7 @@ report:
     back:
       name: '&aGo Back'
       lore:
-      - '&7Go back to the previous menu.'
-      - '&7'
-      - '&eClick to go back.'
+      - '&7To Report'
     submit:
       name: '&aSubmit Report'
     cancel:

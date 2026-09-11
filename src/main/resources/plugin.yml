@@ -18,10 +18,15 @@ commands:
     permission: firepixel.setlanguage
   report:
     description: Report a player
-    aliases: [creport, watchdogreport, wreport]
-  reportaccept:
-    description: Accept a pending report
-    aliases: [watchdogreport-accept, reportaccept]
+  rank:
+    description: Set a player rank
+    aliases: [ranks]
+  setrank:
+    description: Set a player rank
+    permission: firepixel.rank
+  scoreboard:
+    description: Toggle your scoreboard
+    aliases: [sb]
   ban:
     description: Permanently ban a player
     aliases: [wban]
@@ -55,6 +60,10 @@ permissions:
   firepixel.report.staff:
     default: op
   firepixel.staff:
+    default: op
+  firepixel.rank:
+    default: op
+  firepixel.rank.manage:
     default: op
   firepixel.punishment.ban:
     default: op

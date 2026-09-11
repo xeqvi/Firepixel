@@ -19,24 +19,27 @@ The output jar is generated in `target/Firepixel-1.0-SNAPSHOT.jar`.
 ## Installation
 
 1. Drop `Firepixel-1.0-SNAPSHOT.jar` into your server `plugins` folder.
-2. Start the server once to generate `plugins/Firepixel/config.yml` and `plugins/Firepixel/languages/`.
-3. Edit `config.yml` to choose SQLite or MySQL, set the spawn, language and report settings.
+2. Start the server once to generate `plugins/Firepixel/config.yml`, `plugins/Firepixel/ranks.yml` and `plugins/Firepixel/languages/`.
+3. Edit `config.yml` to choose SQLite or MySQL, set the spawn, language, report and scoreboard settings.
 4. Restart the server.
 
 ## Commands
 
-| Command                        | Description                     | Permission                         |
-|--------------------------------|---------------------------------|------------------------------------|
-| `/setspawn`                    | Set the spawn to your position  | `firepixel.setspawn`               |
-| `/spawn`                       | Teleport to the spawn           | -                                  |
-| `/language`                    | Open the language menu          | -                                  |
-| `/language <code>`             | Change your own language        | -                                  |
-| `/setlanguage <code> [player]` | Set a player's language         | `firepixel.setlanguage`            |
-| `/report` (`/creport`)         | Open the report menu            | -                                  |
-| `/reportaccept <reporter>`     | Accept a pending report         | `firepixel.report.staff`           |
-| `/ban`, `/tempban`             | Ban a player                    | `firepixel.punishment.ban`         |
-| `/mute`, `/tempmute`           | Mute a player                   | `firepixel.punishment.mute`        |
-| `/warn`, `/kick`               | Warn or kick a player           | `firepixel.punishment.warn` / `kick` |
+| Command                        | Description                     | Permission                              |
+|--------------------------------|---------------------------------|-----------------------------------------|
+| `/setspawn`                    | Set the spawn to your position  | `firepixel.setspawn`                    |
+| `/spawn`                       | Teleport to the spawn           | -                                       |
+| `/language`                    | Open the language menu          | -                                       |
+| `/language <code>`             | Change your own language        | -                                       |
+| `/setlanguage <code> [player]` | Set a player's language         | `firepixel.setlanguage`                 |
+| `/report`                      | Open the report menu            | -                                       |
+| `/report <player>`             | Report a specific player        | -                                       |
+| `/rank <player> <rank>`        | Set a player's rank             | `firepixel.rank` / `firepixel.rank.manage` |
+| `/setrank <player> <rank>`     | Set a player's rank             | `firepixel.rank`                        |
+| `/scoreboard`                  | Toggle your scoreboard          | -                                       |
+| `/ban`, `/tempban`             | Ban a player                    | `firepixel.punishment.ban`              |
+| `/mute`, `/tempmute`           | Mute a player                   | `firepixel.punishment.mute`             |
+| `/warn`, `/kick`               | Warn or kick a player           | `firepixel.punishment.warn` / `kick`    |
 | `/unban`, `/unmute`            | Remove a punishment             | `firepixel.punishment.unban` / `unmute` |
 
 ## Database
@@ -172,7 +175,7 @@ MaterialUtil.applyTexture(meta, texture);
 
 ## Report
 
-`/report` (alias `/creport`) opens the reason menu. Selecting a reason shows the online players as heads, and selecting a player opens the confirm menu. Reasons, items and lore are all defined in the language files:
+`/report` opens the reason menu from the language files. Selecting a reason shows the online players as heads, and selecting a player opens the confirmation menu. `/report <player>` skips the player list and goes straight from the reason menu to the confirmation menu with the target head in slot 4.
 
 ```yaml
 report:
@@ -192,6 +195,16 @@ report:
         - '&eClick to Select!'
 ```
 
+All report item names and lore are coloured through `ColorUtil`:
+
+```java
+meta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, base + ".name")));
+
+for (String line : plugin.getLanguageManager().getStringList(language, base + ".lore")) {
+    lore.add(ColorUtil.color(line));
+}
+```
+
 Submitting a report saves it and notifies staff:
 
 ```java
@@ -208,7 +221,7 @@ public void submit(Player reporter, String target, String reasonKey) {
 
 ## Punishments
 
-`PunishmentManager` stores bans, mutes, warns and kicks and applies them immediately:
+`PunishmentManager` stores bans, mutes, warns and kicks, applies them immediately and holds the built-in messages and screens:
 
 ```java
 public boolean addPunishment(String playerName, PunishmentType type, String reason, String operator, long duration) {
@@ -227,18 +240,8 @@ public void onLogin(PlayerLoginEvent event) {
     }
 
     event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
-    event.setKickMessage(plugin.getPunishmentManager().buildScreen(language, "ban", "Banned", null));
+    event.setKickMessage(plugin.getPunishmentManager().getScreen(PunishmentManager.PunishmentType.BAN, "Banned", 0));
 }
-```
-
-Screens and broadcast messages are defined in the language files:
-
-```yaml
-punishments:
-  banned: '&c%player% was successfully banned!'
-  banned-broadcast: '&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% permanently'
-  screens:
-    ban: '&cYou are permanently banned from this server!\n&7\n&7Reason: &f%reason%\n&7Find out more: &b&n%appeal%'
 ```
 
 ## Join Messages
@@ -279,29 +282,130 @@ public void handleJoin(Player player) {
 }
 ```
 
+## Ranks
+
+Ranks live in `plugins/Firepixel/ranks.yml` and can be created or edited without touching code:
+
+```yaml
+vip:
+  tag: '&a[VIP] '
+  priority: 10
+  primary_group: vip
+  groups:
+  - vip
+  permissions:
+  - firepixel.rank.vip
+  - firepixel.chat.bypass
+  placeholders:
+    rank_id: vip
+    rank_name: '&aVIP'
+    rank_tag: '&a[VIP] '
+    rank_group: vip
+```
+
+`RankManager` resolves a player's rank from the database or LuckPerms and exposes every rank placeholder:
+
+```java
+public RankDefinition resolveRank(Player player) {
+    if (player == null) {
+        return getRank("default");
+    }
+
+    String luckPerms = detectLuckPermsPrimaryGroup(player);
+    RankDefinition byLuckPerms = findRank(luckPerms);
+
+    if (byLuckPerms != null) {
+        return byLuckPerms;
+    }
+
+    return getRank("default");
+}
+```
+
+`/rank <player> <rank>` and `/setrank <player> <rank>` update the stored rank and sync the LuckPerms group:
+
+```java
+String rankId = definition.getId();
+String primaryGroup = definition.getPrimaryGroup();
+
+applyLuckPermsGroup(offline.getUniqueId(), primaryGroup);
+```
+
+`PlaceholderUtil` replaces rank and server placeholders such as `%rank%`, `%rank_name%`, `%rank_tag%`, `%rank_display%`, `%player%` and `%server_time_HH:mm%`, then passes the result to PlaceholderAPI when it is installed.
+
+## Scoreboard
+
+`ScoreboardManager` builds a per-viewer sidebar and registers a team for each online player so rank prefixes show in the tab list. Titles and lines come from the language files:
+
+```yaml
+scoreboard:
+  enabled: '&aScoreboard enabled.'
+  disabled: '&cScoreboard disabled.'
+  title: '&e&lFIREPIXEL'
+  lines:
+  - '&7%server_time_HH:mm% &8L16A'
+  - ' &7 '
+  - '&fRank: %rank_name%'
+  - '&fLobby: &a%server_id%'
+  - '&fPlayers: &a%online_players%'
+  - ''
+  - '&ewww.firepixel.fun'
+```
+
+World and refresh settings are in `config.yml`:
+
+```yaml
+scoreboard:
+  enabled: true
+  update_interval_ticks: 100
+  scoreboard_enabled_worlds:
+  - world
+```
+
+Each line is resolved with placeholders and drawn on the sidebar:
+
+```java
+List<String> lines = plugin.getLanguageManager().getStringList(language, "scoreboard.lines");
+
+for (int i = 0; i < size; i++) {
+    String resolved = ColorUtil.color(PlaceholderUtil.resolve(viewer, lines.get(i)));
+    String entry = makeUniqueEntry(resolved, i);
+    objective.getScore(entry).setScore(size - i);
+}
+```
+
+`/scoreboard` toggles the sidebar for the player:
+
+```java
+boolean enabled = plugin.getScoreboardManager().toggle(player);
+player.sendMessage(plugin.getLanguageManager().getMessage(language, enabled ? "scoreboard.enabled" : "scoreboard.disabled"));
+```
+
 ## Dependencies
 
 - `spigot-api` 1.8.8
 - `bungeecord-chat` for clickable and hoverable join messages
 - `mysql-connector-j` and `sqlite-jdbc`
 - `authlib` (provided) for player head textures
-- `LuckPerms` (soft) for rank tags
+- `LuckPerms` (soft) for rank tags and rank syncing
+- `PlaceholderAPI` (soft) for external placeholders
 
 ## Project structure
 
 ```
 src/main/java/net/firepixel/fun/
   Firepixel.java              Main plugin class
-  command/                    setspawn, spawn, language, setlanguage, report, punishments
+  command/                    setspawn, spawn, language, setlanguage, report, rank, scoreboard, punishments
   database/                   SQLite and MySQL storage
   player/                     Player data model
   report/                     Report menu holder
   listener/                   Join, quit, language menu, report menu, punishment listeners
-  manager/                    Database, player data, spawn, language, menu, report, punishment, join message managers
+  manager/                    Database, player data, spawn, language, menu, report, punishment, join message, rank, scoreboard managers
   menu/                       Language menu holder
-  util/                       Material and skull texture utilities
+  util/                       Material, colour, placeholder and skull texture utilities
 src/main/resources/
   config.yml                  Plugin configuration
   plugin.yml                  Plugin descriptor
+  ranks.yml                   Rank definitions
   languages/                  Language files
 ```

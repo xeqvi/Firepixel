@@ -2,6 +2,7 @@ package net.firepixel.fun.manager;
 
 import net.firepixel.fun.Firepixel;
 import net.firepixel.fun.report.ReportMenuHolder;
+import net.firepixel.fun.util.ColorUtil;
 import net.firepixel.fun.util.MaterialUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,7 +29,7 @@ public class ReportManager {
     private static final int HEAD_SLOT = 4;
     private static final int INFO_SLOT = 48;
     private static final int CLOSE_SLOT = 49;
-    private static final int BACK_SLOT = 45;
+    private static final int BACK_SLOT = 49;
 
     private final Firepixel plugin;
     private final Map<UUID, String> targets = new HashMap<UUID, String>();
@@ -44,7 +45,7 @@ public class ReportManager {
 
     public void openReasonMenu(Player player, String target) {
         String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-        String title = plugin.getLanguageManager().getMessage(language, "report.menu.reason-title");
+        String title = ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.reason-title"));
         ReportMenuHolder holder = new ReportMenuHolder(ReportMenuHolder.Type.REASON);
         holder.setTarget(target);
         holder.setDirect(target != null && !target.trim().isEmpty());
@@ -52,7 +53,7 @@ public class ReportManager {
         holder.setInventory(inventory);
 
         if (target != null && !target.trim().isEmpty()) {
-            inventory.setItem(HEAD_SLOT, buildTargetHead(target, null, null));
+            inventory.setItem(HEAD_SLOT, buildTargetHead(target, language, null));
         }
 
         Set<String> keys = plugin.getLanguageManager().getKeys(language, "report.menu.reasons");
@@ -76,12 +77,12 @@ public class ReportManager {
             ItemMeta meta = item.getItemMeta();
 
             if (meta != null) {
-                meta.setDisplayName(plugin.getLanguageManager().getMessage(language, base + ".name"));
+                meta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, base + ".name")));
 
                 List<String> lore = new ArrayList<String>();
 
                 for (String line : plugin.getLanguageManager().getStringList(language, base + ".lore")) {
-                    lore.add(line);
+                    lore.add(ColorUtil.color(line));
                 }
 
                 meta.setLore(lore);
@@ -100,7 +101,7 @@ public class ReportManager {
 
     public void openPlayerMenu(Player player, String reasonKey) {
         String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-        String title = plugin.getLanguageManager().getMessage(language, "report.menu.player-title");
+        String title = ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.player-title"));
         ReportMenuHolder holder = new ReportMenuHolder(ReportMenuHolder.Type.PLAYER);
         holder.setReason(reasonKey);
         Inventory inventory = Bukkit.createInventory(holder, 54, title);
@@ -113,10 +114,6 @@ public class ReportManager {
                 continue;
             }
 
-            if (slot == BACK_SLOT) {
-                slot++;
-            }
-
             if (slot >= 45) {
                 break;
             }
@@ -127,14 +124,13 @@ public class ReportManager {
         }
 
         inventory.setItem(BACK_SLOT, buildBackItem(language));
-        inventory.setItem(CLOSE_SLOT, buildCloseItem(language));
 
         player.openInventory(inventory);
     }
 
     public void openConfirmMenu(Player player, String target, String reasonKey, boolean direct) {
         String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-        String title = plugin.getLanguageManager().getMessage(language, "report.menu.confirm-title");
+        String title = ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.confirm-title"));
         ReportMenuHolder holder = new ReportMenuHolder(ReportMenuHolder.Type.CONFIRM);
         holder.setTarget(target);
         holder.setReason(reasonKey);
@@ -146,7 +142,7 @@ public class ReportManager {
         ItemMeta confirmMeta = confirm.getItemMeta();
 
         if (confirmMeta != null) {
-            confirmMeta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.submit.name"));
+            confirmMeta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.submit.name")));
             confirm.setItemMeta(confirmMeta);
         }
 
@@ -154,7 +150,7 @@ public class ReportManager {
         ItemMeta cancelMeta = cancel.getItemMeta();
 
         if (cancelMeta != null) {
-            cancelMeta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.cancel.name"));
+            cancelMeta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.cancel.name")));
             cancel.setItemMeta(cancelMeta);
         }
 
@@ -176,14 +172,14 @@ public class ReportManager {
 
         SkullMeta meta = (SkullMeta) rawMeta;
         meta.setOwner(target);
-        meta.setDisplayName(ChatColor.GRAY + "/report " + ChatColor.AQUA + target);
+        meta.setDisplayName(ColorUtil.color("&7/report &b" + target));
 
         List<String> lore = new ArrayList<String>();
-        lore.add(ChatColor.GRAY + "");
+        lore.add(ColorUtil.color("&7"));
 
         if (language != null && reasonKey != null) {
-            String reasonName = plugin.getLanguageManager().getMessage(language, "report.menu.reasons." + reasonKey + ".name");
-            lore.add(ChatColor.YELLOW + "Report " + target + " for " + reasonName);
+            String reasonName = ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.reasons." + reasonKey + ".name"));
+            lore.add(ColorUtil.color("&7Report &f" + target + " &7for " + reasonName));
         }
 
         meta.setLore(lore);
@@ -197,11 +193,11 @@ public class ReportManager {
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.info.name"));
+            meta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.info.name")));
             List<String> lore = new ArrayList<String>();
 
             for (String line : plugin.getLanguageManager().getStringList(language, "report.menu.info.lore")) {
-                lore.add(line);
+                lore.add(ColorUtil.color(line));
             }
 
             meta.setLore(lore);
@@ -216,11 +212,11 @@ public class ReportManager {
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.back.name"));
+            meta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.back.name")));
             List<String> lore = new ArrayList<String>();
 
             for (String line : plugin.getLanguageManager().getStringList(language, "report.menu.back.lore")) {
-                lore.add(line);
+                lore.add(ColorUtil.color(line));
             }
 
             meta.setLore(lore);
@@ -235,7 +231,7 @@ public class ReportManager {
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.close.name"));
+            meta.setDisplayName(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.close.name")));
             item.setItemMeta(meta);
         }
 
@@ -244,11 +240,11 @@ public class ReportManager {
 
     public void submit(Player reporter, String target, String reasonKey) {
         String language = plugin.getPlayerDataManager().getLanguage(reporter.getUniqueId());
-        String reasonName = plugin.getLanguageManager().getMessage(language, "report.menu.reasons." + reasonKey + ".name");
+        String reasonName = ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.menu.reasons." + reasonKey + ".name"));
 
         if (isOnCooldown(reporter.getUniqueId())) {
             long remaining = getRemaining(reporter.getUniqueId());
-            reporter.sendMessage(plugin.getLanguageManager().getMessage(language, "report.cooldown").replace("%seconds%", String.valueOf(remaining)));
+            reporter.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.cooldown").replace("%seconds%", String.valueOf(remaining))));
             return;
         }
 
@@ -271,11 +267,11 @@ public class ReportManager {
         List<String> submitted = plugin.getLanguageManager().getStringList(language, "report.submitted");
 
         for (String line : submitted) {
-            reporter.sendMessage(line.replace("%reason%", reasonName));
+            reporter.sendMessage(ColorUtil.color(line.replace("%reason%", ChatColor.stripColor(reasonName))));
         }
 
-        String notify = plugin.getLanguageManager().getMessage(language, "report.staff-notify");
-        notify = notify.replace("%reporter%", reporter.getName()).replace("%reported%", target).replace("%reason%", reasonName);
+        String notify = ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.staff-notify"));
+        notify = notify.replace("%reporter%", reporter.getName()).replace("%reported%", target).replace("%reason%", ChatColor.stripColor(reasonName));
 
         for (Player staff : Bukkit.getOnlinePlayers()) {
             if (staff.hasPermission(plugin.getConfig().getString("report.staff-permission", "firepixel.report.staff"))) {

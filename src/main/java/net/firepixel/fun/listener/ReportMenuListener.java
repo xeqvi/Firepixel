@@ -2,6 +2,7 @@ package net.firepixel.fun.listener;
 
 import net.firepixel.fun.Firepixel;
 import net.firepixel.fun.report.ReportMenuHolder;
+import net.firepixel.fun.util.ColorUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +14,7 @@ public class ReportMenuListener implements Listener {
 
     private static final int INFO_SLOT = 48;
     private static final int CLOSE_SLOT = 49;
-    private static final int BACK_SLOT = 45;
+    private static final int BACK_SLOT = 49;
     private static final int CONFIRM_BACK_SLOT = 22;
 
     private final Firepixel plugin;
@@ -84,11 +85,6 @@ public class ReportMenuListener implements Listener {
     }
 
     private void handlePlayer(Player player, ReportMenuHolder report, int slot) {
-        if (slot == CLOSE_SLOT) {
-            player.closeInventory();
-            return;
-        }
-
         if (slot == BACK_SLOT) {
             plugin.getReportManager().openReasonMenu(player);
             return;
@@ -113,7 +109,7 @@ public class ReportMenuListener implements Listener {
         if (slot == 15) {
             player.closeInventory();
             String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-            player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.cancelled"));
+            player.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.cancelled")));
             return;
         }
 

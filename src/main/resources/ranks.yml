@@ -1,0 +1,237 @@
+default:
+  tag: '&7'
+  priority: 0
+  primary_group: default
+  groups:
+  - default
+  permissions:
+  - firepixel.rank.default
+  - firepixel.scoreboard
+  placeholders:
+    rank_id: default
+    rank_name: '&7Default'
+    rank_tag: '&7'
+    rank_group: default
+vip:
+  tag: '&a[VIP] '
+  priority: 10
+  primary_group: vip
+  groups:
+  - vip
+  permissions:
+  - firepixel.rank.vip
+  - firepixel.chat.bypass
+  - firepixel.fly
+  placeholders:
+    rank_id: vip
+    rank_name: '&aVIP'
+    rank_tag: '&a[VIP] '
+    rank_group: vip
+vipplus:
+  tag: '&a[VIP&6+&a] '
+  priority: 20
+  primary_group: vipplus
+  groups:
+  - vipplus
+  permissions:
+  - firepixel.rank.vipplus
+  - firepixel.chat.bypass
+  - firepixel.fly
+  placeholders:
+    rank_id: vipplus
+    rank_name: '&aVIP&6+'
+    rank_tag: '&a[VIP&6+&a] '
+    rank_group: vipplus
+mvp:
+  tag: '&b[MVP] '
+  priority: 30
+  primary_group: mvp
+  groups:
+  - mvp
+  permissions:
+  - firepixel.rank.mvp
+  - firepixel.chat.bypass
+  - firepixel.fly
+  placeholders:
+    rank_id: mvp
+    rank_name: '&bMVP'
+    rank_tag: '&b[MVP] '
+    rank_group: mvp
+mvpplus:
+  tag: '&b[MVP&f+&b] '
+  priority: 40
+  primary_group: mvpplus
+  groups:
+  - mvpplus
+  permissions:
+  - firepixel.rank.mvpplus
+  - firepixel.chat.bypass
+  - firepixel.fly
+  placeholders:
+    rank_id: mvpplus
+    rank_name: '&bMVP&f+'
+    rank_tag: '&b[MVP&f+&b] '
+    rank_group: mvpplus
+mvpplusplus:
+  tag: '&b[MVP&f++&b] '
+  priority: 50
+  primary_group: mvpplusplus
+  groups:
+  - mvpplusplus
+  permissions:
+  - firepixel.rank.mvpplusplus
+  - firepixel.chat.bypass
+  - firepixel.fly
+  placeholders:
+    rank_id: mvpplusplus
+    rank_name: '&bMVP&f++'
+    rank_tag: '&b[MVP&f++&b] '
+    rank_group: mvpplusplus
+youtube:
+  tag: '&c[&fYOUTUBE&c] '
+  priority: 60
+  primary_group: youtube
+  groups:
+  - youtube
+  permissions:
+  - firepixel.rank.youtube
+  - firepixel.chat.bypass
+  - firepixel.fly
+  placeholders:
+    rank_id: youtube
+    rank_name: '&fYOUTUBE'
+    rank_tag: '&c[&fYOUTUBE&c] '
+    rank_group: youtube
+jrhelper:
+  tag: '&9[JR HELPER] '
+  priority: 70
+  primary_group: jrhelper
+  groups:
+  - jrhelper
+  permissions:
+  - firepixel.rank.jrhelper
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: jrhelper
+    rank_name: '&9JR HELPER'
+    rank_tag: '&9[JR HELPER] '
+    rank_group: jrhelper
+helper:
+  tag: '&9[HELPER] '
+  priority: 80
+  primary_group: helper
+  groups:
+  - helper
+  permissions:
+  - firepixel.rank.helper
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: helper
+    rank_name: '&9HELPER'
+    rank_tag: '&9[HELPER] '
+    rank_group: helper
+gm:
+  tag: '&2[GM] '
+  priority: 90
+  primary_group: gm
+  groups:
+  - gm
+  permissions:
+  - firepixel.rank.gm
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: gm
+    rank_name: '&2GM'
+    rank_tag: '&2[GM] '
+    rank_group: gm
+mod:
+  tag: '&2[MOD] '
+  priority: 95
+  primary_group: mod
+  groups:
+  - mod
+  permissions:
+  - firepixel.rank.mod
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: mod
+    rank_name: '&2MOD'
+    rank_tag: '&2[MOD] '
+    rank_group: mod
+admin:
+  tag: '&c[ADMIN] '
+  priority: 100
+  primary_group: admin
+  groups:
+  - admin
+  permissions:
+  - firepixel.rank.admin
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: admin
+    rank_name: '&cADMIN'
+    rank_tag: '&c[ADMIN] '
+    rank_group: admin
+mainadmin:
+  tag: '&c[MAIN ADMIN] '
+  priority: 110
+  primary_group: mainadmin
+  groups:
+  - mainadmin
+  permissions:
+  - firepixel.rank.mainadmin
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: mainadmin
+    rank_name: '&cMAIN ADMIN'
+    rank_tag: '&c[MAIN ADMIN] '
+    rank_group: mainadmin
+founder:
+  tag: '&c[FOUNDER] '
+  priority: 120
+  primary_group: founder
+  groups:
+  - founder
+  permissions:
+  - firepixel.rank.founder
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: founder
+    rank_name: '&cFOUNDER'
+    rank_tag: '&c[FOUNDER] '
+    rank_group: founder
+coowner:
+  tag: '&c[CO OWNER] '
+  priority: 130
+  primary_group: coowner
+  groups:
+  - coowner
+  permissions:
+  - firepixel.rank.coowner
+  - firepixel.chat.bypass
+  - firepixel.report.staff
+  placeholders:
+    rank_id: coowner
+    rank_name: '&cCO OWNER'
+    rank_tag: '&c[CO OWNER] '
+    rank_group: coowner
+owner:
+  tag: '&c[OWNER] '
+  priority: 140
+  primary_group: owner
+  groups:
+  - owner
+  permissions:
+  - '*'
+  placeholders:
+    rank_id: owner
+    rank_name: '&cOWNER'
+    rank_tag: '&c[OWNER] '
+    rank_group: owner

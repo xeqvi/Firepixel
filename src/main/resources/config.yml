@@ -44,3 +44,20 @@ report:
   cooldown-seconds: 60
   staff-permission: firepixel.report.staff
   appeal-link: https://firepixel.fun/appeal
+
+# Scoreboard
+scoreboard:
+  enabled: true
+  update_interval_ticks: 100
+  scoreboard_enabled_worlds:
+  - world
+
+# Tab
+tab:
+  player_prefix: '%rank%'
+  player_suffix: ''
+
+# Server
+server:
+  id: 1
+  name: Lobby
