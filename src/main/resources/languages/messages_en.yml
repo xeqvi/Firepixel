@@ -9,20 +9,17 @@ language:
       - '&7We have added a way for you to help'
       - '&7us translate Firepixel into even'
       - '&7more languages!'
+      - ''
       - '&eClick this icon for the help link.'
       message:
       - '&7'
-      - '&a&m------------------------------------------'
+      - '&a&m-----------------------------------------------------'
       - '&eClick the link below to find out how to help us translate:'
       - '&6https://firepixel.fun/translate'
-      - '&a&m------------------------------------------'
+      - '&a&m-----------------------------------------------------'
       - '&7'
     close:
       name: '&cClose'
-      lore:
-      - '&7Close the menu.'
-      - '&7'
-      - '&eClick to close.'
     items:
       en:
         name: '&aEnglish'
@@ -104,6 +101,7 @@ join-message:
 
 report:
   usage: '&cUsage: /report <player>'
+  wait: '&7Please wait'
   self: '&cYou can''t report yourself!'
   player-only: '&cThis command can only be used by players!'
   no-permission: '&cYou don''t have permission for that!'
@@ -214,3 +212,32 @@ report:
         - '&7Report players for boosting or exploits.'
         - '&7'
         - '&eClick to Select!'
+
+scoreboard:
+  enabled: '&aScoreboard enabled.'
+  disabled: '&cScoreboard disabled.'
+  title: '&e&lFIREPIXEL'
+  lines:
+  - '&7%server_time_HH:mm% &8L16A'
+  - ' &7 '
+  - '&fRank: %rank_name%'
+  - '&fAchievements: &e0'
+  - '&fFirepixel Level: &30'
+  - ' &7'
+  - '&fLobby: &a%server_id%'
+  - '&fPlayers: &a%online_players%'
+  - '&7 '
+  - '&fFriends Online: &a0'
+  - '&fGuild Online: &20'
+  - ''
+  - '&ewww.firepixel.fun'
+
+rank:
+  usage: '&cUsage: /rank <player> <rank>'
+  no-permission: '&cYou don''t have permission to use this!'
+  no-rank-manager: '&cRank manager is not ready.'
+  group-not-found: '&cThat rank does not exist.'
+  player-not-found: '&cPlayer not found.'
+  success: '&aSet &f%player%''s &arank to &f%group%&a.'
+  assigned: '&aYour rank has been set to &f%group%&a.'
+  list: '&eAvailable ranks: &f%ranks%'

@@ -1,6 +1,7 @@
 package net.firepixel.fun.command;
 
 import net.firepixel.fun.Firepixel;
+import net.firepixel.fun.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,30 +23,49 @@ public class ReportCommand implements CommandExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
         String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
 
         if (args.length == 0) {
-            plugin.getReportManager().openReasonMenu(player);
+            openLater(player, null);
             return true;
         }
 
         String target = args[0];
 
         if (target.equalsIgnoreCase(player.getName())) {
-            player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.self"));
+            player.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.self")));
             return true;
         }
 
         Player online = Bukkit.getPlayerExact(target);
 
         if (online == null) {
-            player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.player-not-found"));
+            player.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.player-not-found")));
             return true;
         }
 
-        plugin.getReportManager().openReasonMenu(player, online.getName());
+        openLater(player, online.getName());
 
         return true;
+    }
+
+    private void openLater(final Player player, final String target) {
+        String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
+        player.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "report.wait")));
+
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            public void run() {
+                if (!player.isOnline()) {
+                    return;
+                }
+
+                if (target == null) {
+                    plugin.getReportManager().openReasonMenu(player);
+                } else {
+                    plugin.getReportManager().openReasonMenu(player, target);
+                }
+            }
+        }, 30L);
     }
 }

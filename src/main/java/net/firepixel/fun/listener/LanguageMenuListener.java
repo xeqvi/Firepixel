@@ -60,6 +60,8 @@ public class LanguageMenuListener implements Listener {
 
         if (slot == HELP_SLOT) {
             String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
+            player.closeInventory();
+
             List<String> message = plugin.getLanguageManager().getStringList(language, "language.menu.help.message");
 
             for (String line : message) {

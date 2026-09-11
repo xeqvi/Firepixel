@@ -58,7 +58,7 @@ mvp:
     rank_tag: '&b[MVP] '
     rank_group: mvp
 mvpplus:
-  tag: '&b[MVP&f+&b] '
+  tag: '&b[MVP&c+&b] '
   priority: 40
   primary_group: mvpplus
   groups:
@@ -70,10 +70,10 @@ mvpplus:
   placeholders:
     rank_id: mvpplus
     rank_name: '&bMVP&f+'
-    rank_tag: '&b[MVP&f+&b] '
+    rank_tag: '&b[MVP&c+&b] '
     rank_group: mvpplus
 mvpplusplus:
-  tag: '&b[MVP&f++&b] '
+  tag: '&b[MVP&c++&b] '
   priority: 50
   primary_group: mvpplusplus
   groups:
@@ -85,7 +85,7 @@ mvpplusplus:
   placeholders:
     rank_id: mvpplusplus
     rank_name: '&bMVP&f++'
-    rank_tag: '&b[MVP&f++&b] '
+    rank_tag: '&b[MVP&c++&b] '
     rank_group: mvpplusplus
 youtube:
   tag: '&c[&fYOUTUBE&c] '

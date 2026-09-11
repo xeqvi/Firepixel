@@ -2,6 +2,7 @@ package net.firepixel.fun.command;
 
 import net.firepixel.fun.Firepixel;
 import net.firepixel.fun.manager.RankManager;
+import net.firepixel.fun.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -31,19 +32,35 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         String language = plugin.getLanguageManager().getDefaultLanguage();
 
         if (!sender.hasPermission("firepixel.rank") && !sender.hasPermission("firepixel.rank.manage") && !sender.isOp()) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "rank.no-permission"));
-            return true;
-        }
-
-        if (args.length < 2) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "rank.usage"));
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.no-permission")));
             return true;
         }
 
         RankManager rankManager = plugin.getRankManager();
 
         if (rankManager == null) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "rank.no-rank-manager"));
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.no-rank-manager")));
+            return true;
+        }
+
+        if (args.length == 0) {
+            StringBuilder ranks = new StringBuilder();
+
+            for (RankManager.RankDefinition definition : rankManager.getSortedRanks()) {
+                if (ranks.length() > 0) {
+                    ranks.append("&7, &f");
+                }
+
+                ranks.append(definition.getId());
+            }
+
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.list").replace("%ranks%", ranks.toString())));
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.usage")));
+            return true;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.usage")));
             return true;
         }
 
@@ -52,33 +69,32 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
 
         if (offline == null || (!offline.isOnline() && !offline.hasPlayedBefore())) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "rank.player-not-found"));
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.player-not-found")));
             return true;
         }
 
-        RankManager.RankDefinition definition = rankManager.getRank(requestedRank);
+        RankManager.RankDefinition definition = rankManager.find(requestedRank);
 
-        if (definition == null || (!definition.matches(requestedRank) && !"default".equalsIgnoreCase(requestedRank))) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "rank.group-not-found"));
+        if (definition == null) {
+            sender.sendMessage(ColorUtil.color(plugin.getLanguageManager().getMessage(language, "rank.group-not-found")));
             return true;
         }
 
         String rankId = definition.getId();
-        String primaryGroup = definition.getPrimaryGroup();
 
-        applyLuckPermsGroup(offline.getUniqueId(), primaryGroup);
+        plugin.getPlayerDataManager().setRank(offline.getUniqueId(), rankId);
+        applyLuckPermsGroup(offline.getUniqueId(), definition.getPrimaryGroup());
 
         String name = offline.getName() == null ? playerName : offline.getName();
-
         String success = plugin.getLanguageManager().getMessage(language, "rank.success");
         success = success.replace("%player%", name).replace("%group%", rankId);
-        sender.sendMessage(success);
+        sender.sendMessage(ColorUtil.color(success));
 
         if (offline.isOnline()) {
             Player online = (Player) offline;
             String assigned = plugin.getLanguageManager().getMessage(language, "rank.assigned");
             assigned = assigned.replace("%group%", rankId);
-            online.sendMessage(assigned);
+            online.sendMessage(ColorUtil.color(assigned));
             plugin.getScoreboardManager().refreshPlayer(online);
         }
 

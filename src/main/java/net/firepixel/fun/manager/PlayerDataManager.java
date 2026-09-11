@@ -37,7 +37,18 @@ public class PlayerDataManager {
             ResultSet result = select.executeQuery();
 
             if (result.next()) {
-                data = new PlayerData(uuid, name, result.getLong("first_join"), now, result.getString("language"));
+                String rank = "default";
+
+                try {
+                    rank = result.getString("rank");
+                } catch (SQLException ignored) {
+                }
+
+                if (rank == null || rank.trim().isEmpty()) {
+                    rank = "default";
+                }
+
+                data = new PlayerData(uuid, name, result.getLong("first_join"), now, result.getString("language"), rank);
 
                 PreparedStatement update = connection.prepareStatement("UPDATE " + table + " SET name = ?, last_join = ? WHERE uuid = ?");
                 update.setString(1, name);
@@ -46,14 +57,15 @@ public class PlayerDataManager {
                 update.executeUpdate();
                 update.close();
             } else {
-                data = new PlayerData(uuid, name, now, now, plugin.getLanguageManager().getDefaultLanguage());
+                data = new PlayerData(uuid, name, now, now, plugin.getLanguageManager().getDefaultLanguage(), "default");
 
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO " + table + " (uuid, name, first_join, last_join, language) VALUES (?, ?, ?, ?, ?)");
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO " + table + " (uuid, name, first_join, last_join, language, rank) VALUES (?, ?, ?, ?, ?, ?)");
                 insert.setString(1, uuid.toString());
                 insert.setString(2, name);
                 insert.setLong(3, now);
                 insert.setLong(4, now);
                 insert.setString(5, data.getLanguage());
+                insert.setString(6, data.getRank());
                 insert.executeUpdate();
                 insert.close();
             }
@@ -82,11 +94,12 @@ public class PlayerDataManager {
         try {
             Connection connection = database.getConnection();
 
-            PreparedStatement update = connection.prepareStatement("UPDATE " + table + " SET name = ?, last_join = ?, language = ? WHERE uuid = ?");
+            PreparedStatement update = connection.prepareStatement("UPDATE " + table + " SET name = ?, last_join = ?, language = ?, rank = ? WHERE uuid = ?");
             update.setString(1, data.getName());
             update.setLong(2, now);
             update.setString(3, data.getLanguage());
-            update.setString(4, uuid.toString());
+            update.setString(4, data.getRank());
+            update.setString(5, uuid.toString());
             update.executeUpdate();
             update.close();
         } catch (SQLException exception) {
@@ -124,6 +137,38 @@ public class PlayerDataManager {
 
             PreparedStatement update = connection.prepareStatement("UPDATE " + table + " SET language = ? WHERE uuid = ?");
             update.setString(1, language);
+            update.setString(2, uuid.toString());
+            update.executeUpdate();
+            update.close();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public String getRank(UUID uuid) {
+        PlayerData data = cache.get(uuid);
+
+        if (data == null) {
+            return "default";
+        }
+
+        return data.getRank();
+    }
+
+    public void setRank(UUID uuid, String rank) {
+        PlayerData data = cache.get(uuid);
+
+        if (data == null) {
+            return;
+        }
+
+        data.setRank(rank);
+
+        try {
+            Connection connection = database.getConnection();
+
+            PreparedStatement update = connection.prepareStatement("UPDATE " + table + " SET rank = ? WHERE uuid = ?");
+            update.setString(1, rank);
             update.setString(2, uuid.toString());
             update.executeUpdate();
             update.close();

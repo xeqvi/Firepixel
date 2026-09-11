@@ -9,13 +9,15 @@ public class PlayerData {
     private long firstJoin;
     private long lastJoin;
     private String language;
+    private String rank;
 
-    public PlayerData(UUID uuid, String name, long firstJoin, long lastJoin, String language) {
+    public PlayerData(UUID uuid, String name, long firstJoin, long lastJoin, String language, String rank) {
         this.uuid = uuid;
         this.name = name;
         this.firstJoin = firstJoin;
         this.lastJoin = lastJoin;
         this.language = language;
+        this.rank = rank;
     }
 
     public UUID getUuid() {
@@ -52,5 +54,13 @@ public class PlayerData {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getRank() {
+        return rank == null || rank.trim().isEmpty() ? "default" : rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
     }
 }

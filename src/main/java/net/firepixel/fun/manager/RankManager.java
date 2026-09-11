@@ -127,6 +127,10 @@ public class RankManager {
         return findRank(id) != null;
     }
 
+    public RankDefinition find(String id) {
+        return findRank(id);
+    }
+
     public RankDefinition ensureDefaultRank() {
         if (!ranks.containsKey("default")) {
             RankDefinition def = new RankDefinition("default");
@@ -165,6 +169,19 @@ public class RankManager {
     public RankDefinition resolveRank(Player player) {
         if (player == null) {
             return getRank("default");
+        }
+
+        try {
+            String stored = plugin.getPlayerDataManager().getRank(player.getUniqueId());
+
+            if (stored != null && !stored.equalsIgnoreCase("default")) {
+                RankDefinition byStored = findRank(stored);
+
+                if (byStored != null) {
+                    return byStored;
+                }
+            }
+        } catch (Throwable ignored) {
         }
 
         String luckPerms = detectLuckPermsPrimaryGroup(player);
