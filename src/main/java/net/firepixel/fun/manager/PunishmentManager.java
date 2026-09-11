@@ -23,14 +23,70 @@ public class PunishmentManager {
         this.plugin = plugin;
     }
 
-    public String buildScreen(String language, String key, String reason, String duration) {
+    public String getScreen(PunishmentType type, String reason, long duration) {
         String appeal = plugin.getConfig().getString("report.appeal-link", "https://firepixel.fun/appeal");
-        String message = plugin.getLanguageManager().getMessage(language, "punishments.screens." + key);
-        message = message.replace("%reason%", reason == null ? "No reason provided" : reason);
-        message = message.replace("%appeal%", appeal);
-        message = message.replace("%duration%", duration == null ? "" : duration);
 
-        return ChatColor.translateAlternateColorCodes('&', message);
+        if (type == PunishmentType.TEMPBAN) {
+            return ChatColor.translateAlternateColorCodes('&',
+                    "&cYou are temporarily banned for &f" + formatDuration(duration) + " &cfrom this server!\n" +
+                            "&7\n" +
+                            "&7Reason: &f" + reason + "\n" +
+                            "&7Find out more: &b&n" + appeal + "\n" +
+                            "&7\n" +
+                            "&7Ban ID: &f#0001\n" +
+                            "&7Sharing your Ban ID may affect the processing of your appeal");
+        }
+
+        if (type == PunishmentType.BAN) {
+            return ChatColor.translateAlternateColorCodes('&',
+                    "&cYou are permanently banned from this server!\n" +
+                            "&7\n" +
+                            "&7Reason: &f" + reason + "\n" +
+                            "&7Find out more: &b&n" + appeal + "\n" +
+                            "&7\n" +
+                            "&7Ban ID: &f#0001\n" +
+                            "&7Sharing your Ban ID may affect the processing of your appeal");
+        }
+
+        if (type == PunishmentType.KICK) {
+            return ChatColor.translateAlternateColorCodes('&',
+                    "&cYou got kicked from this server!\n" +
+                            "&7\n" +
+                            "&7Reason: &l" + reason + "\n" +
+                            "&7");
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', "&cYou are muted!");
+    }
+
+    public String getMessage(String key) {
+        if (key.equals("no-permission")) return ChatColor.translateAlternateColorCodes('&', "&cYou don't have permission for that!");
+        if (key.equals("invalid-duration")) return ChatColor.translateAlternateColorCodes('&', "&cInvalid duration format! Use 30s, 10m, 2h, 1d.");
+        if (key.equals("already-banned")) return ChatColor.translateAlternateColorCodes('&', "&c%player% is already banned!");
+        if (key.equals("already-muted")) return ChatColor.translateAlternateColorCodes('&', "&c%player% is already muted!");
+        if (key.equals("not-banned")) return ChatColor.translateAlternateColorCodes('&', "&c%player% is not banned!");
+        if (key.equals("not-muted")) return ChatColor.translateAlternateColorCodes('&', "&c%player% is not muted!");
+        if (key.equals("banned")) return ChatColor.translateAlternateColorCodes('&', "&c%player% was successfully banned!");
+        if (key.equals("temp-banned")) return ChatColor.translateAlternateColorCodes('&', "&c%player% was successfully temp-banned for &e%duration%&7!");
+        if (key.equals("muted")) return ChatColor.translateAlternateColorCodes('&', "&c%player% was successfully muted!");
+        if (key.equals("temp-muted")) return ChatColor.translateAlternateColorCodes('&', "&c%player% was successfully temp-muted for &e%duration%&7!");
+        if (key.equals("warned")) return ChatColor.translateAlternateColorCodes('&', "&c%player% was successfully warned!");
+        if (key.equals("kicked")) return ChatColor.translateAlternateColorCodes('&', "&c%player% was successfully kicked!");
+        if (key.equals("unbanned")) return ChatColor.translateAlternateColorCodes('&', "&a%player% was successfully unbanned!");
+        if (key.equals("unmuted")) return ChatColor.translateAlternateColorCodes('&', "&a%player% was successfully unmuted!");
+        if (key.equals("banned-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% permanently");
+        if (key.equals("temp-banned-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% For &f%duration%");
+        if (key.equals("muted-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&c&l&n%player% &cgot muted permanently by &l%staff% &cFor %reason%");
+        if (key.equals("temp-muted-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&c&l&n%player% &cgot muted by &l%staff% &cFor %reason% For &f%duration%");
+        if (key.equals("warned-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&c&l&n%player% &cgot warned by &l%staff% &cFor the reason %reason%");
+        if (key.equals("kicked-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&c&l&n%player% &cgot kicked by &l%staff%");
+        if (key.equals("unbanned-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&e&o%staff% &7unbanned &c&o%player%");
+        if (key.equals("unmuted-broadcast")) return ChatColor.translateAlternateColorCodes('&', "&e&o%staff% &7unmuted &c&o%player%");
+        return "";
+    }
+
+    public String buildScreen(PunishmentType type, String reason, long duration) {
+        return getScreen(type, reason, duration);
     }
 
     public boolean addPunishment(String playerName, PunishmentType type, String reason, String operator, long duration) {
@@ -123,20 +179,8 @@ public class PunishmentManager {
             return;
         }
 
-        String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-
-        switch (type) {
-            case BAN:
-                player.kickPlayer(buildScreen(language, "ban", reason, null));
-                break;
-            case TEMPBAN:
-                player.kickPlayer(buildScreen(language, "tempban", reason, formatDuration(duration)));
-                break;
-            case KICK:
-                player.kickPlayer(buildScreen(language, "kick", reason, null));
-                break;
-            default:
-                break;
+        if (type == PunishmentType.BAN || type == PunishmentType.TEMPBAN || type == PunishmentType.KICK) {
+            player.kickPlayer(getScreen(type, reason, duration));
         }
     }
 

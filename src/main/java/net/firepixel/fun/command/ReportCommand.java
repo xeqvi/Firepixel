@@ -1,6 +1,7 @@
 package net.firepixel.fun.command;
 
 import net.firepixel.fun.Firepixel;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,7 +23,28 @@ public class ReportCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        plugin.getReportManager().openReasonMenu(player);
+        String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
+
+        if (args.length == 0) {
+            plugin.getReportManager().openReasonMenu(player);
+            return true;
+        }
+
+        String target = args[0];
+
+        if (target.equalsIgnoreCase(player.getName())) {
+            player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.self"));
+            return true;
+        }
+
+        Player online = Bukkit.getPlayerExact(target);
+
+        if (online == null) {
+            player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.player-not-found"));
+            return true;
+        }
+
+        plugin.getReportManager().openReasonMenu(player, online.getName());
 
         return true;
     }

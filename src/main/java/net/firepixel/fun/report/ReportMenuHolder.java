@@ -16,6 +16,7 @@ public class ReportMenuHolder implements InventoryHolder {
     private final Map<Integer, String> slots = new HashMap<Integer, String>();
     private String target;
     private String reason;
+    private boolean direct;
     private Inventory inventory;
 
     public ReportMenuHolder(Type type) {
@@ -48,6 +49,14 @@ public class ReportMenuHolder implements InventoryHolder {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public boolean isDirect() {
+        return direct;
+    }
+
+    public void setDirect(boolean direct) {
+        this.direct = direct;
     }
 
     @Override

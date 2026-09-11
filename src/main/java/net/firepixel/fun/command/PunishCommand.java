@@ -18,11 +18,10 @@ public class PunishCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String language = plugin.getLanguageManager().getDefaultLanguage();
         PunishmentManager manager = plugin.getPunishmentManager();
 
         if (!sender.hasPermission("firepixel.punishment." + type.name().toLowerCase())) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.no-permission"));
+            sender.sendMessage(manager.getMessage("no-permission"));
             return true;
         }
 
@@ -30,7 +29,7 @@ public class PunishCommand implements CommandExecutor {
         int start = silent ? 1 : 0;
 
         if (args.length < start + 2) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "report.usage"));
+            sender.sendMessage(manager.getMessage("invalid-duration"));
             return true;
         }
 
@@ -40,14 +39,14 @@ public class PunishCommand implements CommandExecutor {
 
         if (type == PunishmentManager.PunishmentType.TEMPBAN || type == PunishmentManager.PunishmentType.TEMPMUTE) {
             if (args.length < start + 3) {
-                sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.invalid-duration"));
+                sender.sendMessage(manager.getMessage("invalid-duration"));
                 return true;
             }
 
             duration = manager.parseDuration(args[start + 1]);
 
             if (duration <= 0) {
-                sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.invalid-duration"));
+                sender.sendMessage(manager.getMessage("invalid-duration"));
                 return true;
             }
 
@@ -69,12 +68,12 @@ public class PunishCommand implements CommandExecutor {
         String lower = type.name().toLowerCase();
 
         if ((type == PunishmentManager.PunishmentType.BAN || type == PunishmentManager.PunishmentType.TEMPBAN) && manager.isPlayerBanned(playerName)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.already-banned").replace("%player%", playerName));
+            sender.sendMessage(manager.getMessage("already-banned").replace("%player%", playerName));
             return true;
         }
 
         if ((type == PunishmentManager.PunishmentType.MUTE || type == PunishmentManager.PunishmentType.TEMPMUTE) && manager.isPlayerMuted(playerName)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.already-muted").replace("%player%", playerName));
+            sender.sendMessage(manager.getMessage("already-muted").replace("%player%", playerName));
             return true;
         }
 
@@ -82,20 +81,27 @@ public class PunishCommand implements CommandExecutor {
             return true;
         }
 
-        String key;
+        String successKey = lower + "d";
 
-        if (type == PunishmentManager.PunishmentType.TEMPBAN || type == PunishmentManager.PunishmentType.TEMPMUTE) {
-            key = lower + "-banned";
-        } else {
-            key = lower + "d";
+        if (type == PunishmentManager.PunishmentType.TEMPBAN) {
+            successKey = "temp-banned";
+        } else if (type == PunishmentManager.PunishmentType.TEMPMUTE) {
+            successKey = "temp-muted";
         }
 
-        String success = plugin.getLanguageManager().getMessage(language, "punishments." + key);
+        String success = manager.getMessage(successKey);
         success = success.replace("%player%", playerName).replace("%duration%", manager.formatDuration(duration));
         sender.sendMessage(success);
 
         String broadcastKey = lower + "-broadcast";
-        String broadcast = plugin.getLanguageManager().getMessage(language, "punishments." + broadcastKey);
+
+        if (type == PunishmentManager.PunishmentType.TEMPBAN) {
+            broadcastKey = "temp-banned-broadcast";
+        } else if (type == PunishmentManager.PunishmentType.TEMPMUTE) {
+            broadcastKey = "temp-muted-broadcast";
+        }
+
+        String broadcast = manager.getMessage(broadcastKey);
         broadcast = broadcast.replace("%player%", playerName).replace("%staff%", sender.getName()).replace("%reason%", reason).replace("%duration%", manager.formatDuration(duration));
         manager.broadcast(broadcast, silent);
 

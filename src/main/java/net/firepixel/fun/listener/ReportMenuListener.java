@@ -13,6 +13,8 @@ public class ReportMenuListener implements Listener {
 
     private static final int INFO_SLOT = 48;
     private static final int CLOSE_SLOT = 49;
+    private static final int BACK_SLOT = 45;
+    private static final int CONFIRM_BACK_SLOT = 22;
 
     private final Firepixel plugin;
 
@@ -43,42 +45,83 @@ public class ReportMenuListener implements Listener {
         }
 
         if (report.getType() == ReportMenuHolder.Type.REASON) {
-            if (slot == CLOSE_SLOT || slot == INFO_SLOT) {
-                if (slot == CLOSE_SLOT) {
-                    player.closeInventory();
-                }
-                return;
-            }
-
-            String reasonKey = report.getSlot(slot);
-
-            if (reasonKey == null) {
-                return;
-            }
-
-            plugin.getReportManager().openPlayerMenu(player, reasonKey);
+            handleReason(player, report, slot);
             return;
         }
 
         if (report.getType() == ReportMenuHolder.Type.PLAYER) {
-            String target = report.getSlot(slot);
-
-            if (target == null) {
-                return;
-            }
-
-            plugin.getReportManager().openConfirmMenu(player, target, report.getReason());
+            handlePlayer(player, report, slot);
             return;
         }
 
         if (report.getType() == ReportMenuHolder.Type.CONFIRM) {
-            if (slot == 11) {
-                plugin.getReportManager().submit(player, report.getTarget(), report.getReason());
-                player.closeInventory();
-            } else if (slot == 15) {
-                player.closeInventory();
-                String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-                player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.cancelled"));
+            handleConfirm(player, report, slot);
+        }
+    }
+
+    private void handleReason(Player player, ReportMenuHolder report, int slot) {
+        if (slot == CLOSE_SLOT) {
+            player.closeInventory();
+            return;
+        }
+
+        if (slot == INFO_SLOT) {
+            return;
+        }
+
+        String reasonKey = report.getSlot(slot);
+
+        if (reasonKey == null) {
+            return;
+        }
+
+        if (report.isDirect()) {
+            plugin.getReportManager().openConfirmMenu(player, report.getTarget(), reasonKey, true);
+            return;
+        }
+
+        plugin.getReportManager().openPlayerMenu(player, reasonKey);
+    }
+
+    private void handlePlayer(Player player, ReportMenuHolder report, int slot) {
+        if (slot == CLOSE_SLOT) {
+            player.closeInventory();
+            return;
+        }
+
+        if (slot == BACK_SLOT) {
+            plugin.getReportManager().openReasonMenu(player);
+            return;
+        }
+
+        String target = report.getSlot(slot);
+
+        if (target == null) {
+            return;
+        }
+
+        plugin.getReportManager().openConfirmMenu(player, target, report.getReason(), false);
+    }
+
+    private void handleConfirm(Player player, ReportMenuHolder report, int slot) {
+        if (slot == 11) {
+            plugin.getReportManager().submit(player, report.getTarget(), report.getReason());
+            player.closeInventory();
+            return;
+        }
+
+        if (slot == 15) {
+            player.closeInventory();
+            String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
+            player.sendMessage(plugin.getLanguageManager().getMessage(language, "report.cancelled"));
+            return;
+        }
+
+        if (slot == CONFIRM_BACK_SLOT) {
+            if (report.isDirect()) {
+                plugin.getReportManager().openReasonMenu(player, report.getTarget());
+            } else {
+                plugin.getReportManager().openPlayerMenu(player, report.getReason());
             }
         }
     }

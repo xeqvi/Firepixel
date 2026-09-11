@@ -18,16 +18,15 @@ public class UnpunishCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String language = plugin.getLanguageManager().getDefaultLanguage();
         PunishmentManager manager = plugin.getPunishmentManager();
 
         if (!sender.hasPermission("firepixel.punishment." + type.name().toLowerCase())) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.no-permission"));
+            sender.sendMessage(manager.getMessage("no-permission"));
             return true;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "report.usage"));
+            sender.sendMessage(manager.getMessage("invalid-duration"));
             return true;
         }
 
@@ -35,12 +34,12 @@ public class UnpunishCommand implements CommandExecutor {
         boolean banned = type == PunishmentManager.PunishmentType.BAN;
 
         if (banned && !manager.isPlayerBanned(playerName)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.not-banned").replace("%player%", playerName));
+            sender.sendMessage(manager.getMessage("not-banned").replace("%player%", playerName));
             return true;
         }
 
         if (!banned && !manager.isPlayerMuted(playerName)) {
-            sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments.not-muted").replace("%player%", playerName));
+            sender.sendMessage(manager.getMessage("not-muted").replace("%player%", playerName));
             return true;
         }
 
@@ -49,9 +48,9 @@ public class UnpunishCommand implements CommandExecutor {
         String key = banned ? "unbanned" : "unmuted";
         String broadcastKey = banned ? "unbanned-broadcast" : "unmuted-broadcast";
 
-        sender.sendMessage(plugin.getLanguageManager().getMessage(language, "punishments." + key).replace("%player%", playerName));
+        sender.sendMessage(manager.getMessage(key).replace("%player%", playerName));
 
-        String broadcast = plugin.getLanguageManager().getMessage(language, "punishments." + broadcastKey);
+        String broadcast = manager.getMessage(broadcastKey);
         broadcast = broadcast.replace("%player%", playerName).replace("%staff%", sender.getName());
         manager.broadcast(broadcast, false);
 

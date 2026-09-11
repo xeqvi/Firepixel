@@ -132,6 +132,12 @@ report:
       - '&7more information.'
     close:
       name: '&cClose'
+    back:
+      name: '&aGo Back'
+      lore:
+      - '&7Go back to the previous menu.'
+      - '&7'
+      - '&eClick to go back.'
     submit:
       name: '&aSubmit Report'
     cancel:
@@ -210,32 +216,3 @@ report:
         - '&7Report players for boosting or exploits.'
         - '&7'
         - '&eClick to Select!'
-
-punishments:
-  already-banned: '&c%player% is already banned!'
-  banned: '&c%player% was successfully banned!'
-  banned-broadcast: '&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% permanently'
-  temp-banned: '&c%player% was successfully temp-banned for &e%duration%&7!'
-  temp-banned-broadcast: '&c&l&n%player% &cgot banned by &l%staff% &cFor %reason% For &f%duration%'
-  muted: '&c%player% was successfully muted!'
-  already-muted: '&c%player% is already muted!'
-  muted-broadcast: '&c&l&n%player% &cgot muted permanently by &l%staff% &cFor %reason%'
-  temp-muted: '&c%player% was successfully temp-muted for &e%duration%&7!'
-  temp-muted-broadcast: '&c&l&n%player% &cgot muted by &l%staff% &cFor %reason% For &f%duration%'
-  warned: '&c%player% was successfully warned!'
-  warned-broadcast: '&c&l&n%player% &cgot warned by &l%staff% &cFor the reason %reason%'
-  kicked: '&c%player% was successfully kicked!'
-  kicked-broadcast: '&c&l&n%player% &cgot kicked by &l%staff%'
-  unbanned: '&a%player% was successfully unbanned!'
-  unbanned-broadcast: '&e&o%staff% &7unbanned &c&o%player%'
-  not-banned: '&c%player% is not banned!'
-  unmuted: '&a%player% was successfully unmuted!'
-  unmuted-broadcast: '&e&o%staff% &7unmuted &c&o%player%'
-  not-muted: '&c%player% is not muted!'
-  invalid-duration: '&cInvalid duration format. Use 30s, 10m, 2h, 1d.'
-  no-permission: '&cYou don''t have permission for that!'
-  screens:
-    ban: '&cYou are permanently banned from this server!\n&7\n&7Reason: &f%reason%\n&7Find out more: &b&n%appeal%\n&7\n&7Ban ID: &f#0001\n&7Sharing your Ban ID may affect the processing of your appeal'
-    tempban: '&cYou are temporarily banned for &f%duration% &cfrom this server!\n&7\n&7Reason: &f%reason%\n&7Find out more: &b&n%appeal%\n&7\n&7Ban ID: &f#0001\n&7Sharing your Ban ID may affect the processing of your appeal'
-    kick: '&cYou got kicked from this server!\n&7\n&7Reason: &l%reason%'
-    mute: '&cYou are muted!'

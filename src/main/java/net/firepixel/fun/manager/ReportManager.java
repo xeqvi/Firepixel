@@ -25,6 +25,11 @@ import java.util.UUID;
 
 public class ReportManager {
 
+    private static final int HEAD_SLOT = 4;
+    private static final int INFO_SLOT = 48;
+    private static final int CLOSE_SLOT = 49;
+    private static final int BACK_SLOT = 45;
+
     private final Firepixel plugin;
     private final Map<UUID, String> targets = new HashMap<UUID, String>();
     private final Map<UUID, Long> cooldowns = new HashMap<UUID, Long>();
@@ -34,11 +39,21 @@ public class ReportManager {
     }
 
     public void openReasonMenu(Player player) {
+        openReasonMenu(player, null);
+    }
+
+    public void openReasonMenu(Player player, String target) {
         String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
         String title = plugin.getLanguageManager().getMessage(language, "report.menu.reason-title");
         ReportMenuHolder holder = new ReportMenuHolder(ReportMenuHolder.Type.REASON);
+        holder.setTarget(target);
+        holder.setDirect(target != null && !target.trim().isEmpty());
         Inventory inventory = Bukkit.createInventory(holder, 54, title);
         holder.setInventory(inventory);
+
+        if (target != null && !target.trim().isEmpty()) {
+            inventory.setItem(HEAD_SLOT, buildTargetHead(target, null, null));
+        }
 
         Set<String> keys = plugin.getLanguageManager().getKeys(language, "report.menu.reasons");
 
@@ -77,8 +92,8 @@ public class ReportManager {
             holder.setSlot(slot, key);
         }
 
-        inventory.setItem(48, buildInfoItem(language));
-        inventory.setItem(49, buildCloseItem(language));
+        inventory.setItem(INFO_SLOT, buildInfoItem(language));
+        inventory.setItem(CLOSE_SLOT, buildCloseItem(language));
 
         player.openInventory(inventory);
     }
@@ -98,25 +113,32 @@ public class ReportManager {
                 continue;
             }
 
+            if (slot == BACK_SLOT) {
+                slot++;
+            }
+
             if (slot >= 45) {
                 break;
             }
 
-            inventory.setItem(slot, buildPlayerHead(language, target));
+            inventory.setItem(slot, buildTargetHead(target.getName(), language, reasonKey));
             holder.setSlot(slot, target.getName());
             slot++;
         }
 
+        inventory.setItem(BACK_SLOT, buildBackItem(language));
+        inventory.setItem(CLOSE_SLOT, buildCloseItem(language));
+
         player.openInventory(inventory);
     }
 
-    public void openConfirmMenu(Player player, String target, String reasonKey) {
+    public void openConfirmMenu(Player player, String target, String reasonKey, boolean direct) {
         String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
         String title = plugin.getLanguageManager().getMessage(language, "report.menu.confirm-title");
-        String reasonName = plugin.getLanguageManager().getMessage(language, "report.menu.reasons." + reasonKey + ".name");
         ReportMenuHolder holder = new ReportMenuHolder(ReportMenuHolder.Type.CONFIRM);
         holder.setTarget(target);
         holder.setReason(reasonKey);
+        holder.setDirect(direct);
         Inventory inventory = Bukkit.createInventory(holder, 27, title);
         holder.setInventory(inventory);
 
@@ -136,25 +158,38 @@ public class ReportManager {
             cancel.setItemMeta(cancelMeta);
         }
 
-        ItemStack head = MaterialUtil.createSkull();
-        ItemMeta rawHead = head.getItemMeta();
-
-        if (rawHead instanceof SkullMeta) {
-            SkullMeta skullMeta = (SkullMeta) rawHead;
-            skullMeta.setOwner(target);
-            skullMeta.setDisplayName(ChatColor.GRAY + "/report " + ChatColor.AQUA + target);
-            List<String> lore = new ArrayList<String>();
-            lore.add("");
-            lore.add(ChatColor.YELLOW + "Report " + target + " for " + reasonName);
-            skullMeta.setLore(lore);
-            head.setItemMeta(skullMeta);
-        }
-
         inventory.setItem(11, confirm);
-        inventory.setItem(13, head);
+        inventory.setItem(13, buildTargetHead(target, language, reasonKey));
         inventory.setItem(15, cancel);
+        inventory.setItem(22, buildBackItem(language));
 
         player.openInventory(inventory);
+    }
+
+    private ItemStack buildTargetHead(String target, String language, String reasonKey) {
+        ItemStack item = MaterialUtil.createSkull();
+        ItemMeta rawMeta = item.getItemMeta();
+
+        if (!(rawMeta instanceof SkullMeta)) {
+            return item;
+        }
+
+        SkullMeta meta = (SkullMeta) rawMeta;
+        meta.setOwner(target);
+        meta.setDisplayName(ChatColor.GRAY + "/report " + ChatColor.AQUA + target);
+
+        List<String> lore = new ArrayList<String>();
+        lore.add(ChatColor.GRAY + "");
+
+        if (language != null && reasonKey != null) {
+            String reasonName = plugin.getLanguageManager().getMessage(language, "report.menu.reasons." + reasonKey + ".name");
+            lore.add(ChatColor.YELLOW + "Report " + target + " for " + reasonName);
+        }
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+        return item;
     }
 
     private ItemStack buildInfoItem(String language) {
@@ -176,29 +211,31 @@ public class ReportManager {
         return item;
     }
 
-    private ItemStack buildCloseItem(String language) {
-        ItemStack item = new ItemStack(Material.BARRIER, 1);
+    private ItemStack buildBackItem(String language) {
+        ItemStack item = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.close.name"));
+            meta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.back.name"));
+            List<String> lore = new ArrayList<String>();
+
+            for (String line : plugin.getLanguageManager().getStringList(language, "report.menu.back.lore")) {
+                lore.add(line);
+            }
+
+            meta.setLore(lore);
             item.setItemMeta(meta);
         }
 
         return item;
     }
 
-    private ItemStack buildPlayerHead(String language, Player target) {
-        ItemStack item = MaterialUtil.createSkull();
-        ItemMeta rawMeta = item.getItemMeta();
+    private ItemStack buildCloseItem(String language) {
+        ItemStack item = new ItemStack(Material.BARRIER, 1);
+        ItemMeta meta = item.getItemMeta();
 
-        if (rawMeta instanceof SkullMeta) {
-            SkullMeta meta = (SkullMeta) rawMeta;
-            meta.setOwner(target.getName());
-            meta.setDisplayName(ChatColor.YELLOW + target.getName());
-            List<String> lore = new ArrayList<String>();
-            lore.add(ChatColor.GRAY + "Click to report this player.");
-            meta.setLore(lore);
+        if (meta != null) {
+            meta.setDisplayName(plugin.getLanguageManager().getMessage(language, "report.menu.close.name"));
             item.setItemMeta(meta);
         }
 

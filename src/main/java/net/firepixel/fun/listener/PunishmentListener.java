@@ -1,7 +1,7 @@
 package net.firepixel.fun.listener;
 
 import net.firepixel.fun.Firepixel;
-import org.bukkit.ChatColor;
+import net.firepixel.fun.manager.PunishmentManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,8 +25,7 @@ public class PunishmentListener implements Listener {
         }
 
         event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
-        String language = plugin.getLanguageManager().getDefaultLanguage();
-        event.setKickMessage(plugin.getPunishmentManager().buildScreen(language, "ban", "Banned", null));
+        event.setKickMessage(plugin.getPunishmentManager().getScreen(PunishmentManager.PunishmentType.BAN, "Banned", 0));
     }
 
     @EventHandler
@@ -38,7 +37,6 @@ public class PunishmentListener implements Listener {
         }
 
         event.setCancelled(true);
-        String language = plugin.getPlayerDataManager().getLanguage(player.getUniqueId());
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage(language, "punishments.screens.mute")));
+        player.sendMessage(plugin.getPunishmentManager().getScreen(PunishmentManager.PunishmentType.MUTE, null, 0));
     }
 }
