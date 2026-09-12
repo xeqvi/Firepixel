@@ -20,7 +20,6 @@ commands:
     description: Report a player
   rank:
     description: Set a player rank
-    aliases: [ranks]
   setrank:
     description: Set a player rank
     permission: firepixel.rank
@@ -29,22 +28,16 @@ commands:
     aliases: [sb]
   ban:
     description: Permanently ban a player
-    aliases: [wban]
   tempban:
     description: Temporarily ban a player
-    aliases: [wtempban, tban]
   mute:
     description: Permanently mute a player
-    aliases: [wmute]
   tempmute:
     description: Temporarily mute a player
-    aliases: [wtempmute, tmute]
   warn:
     description: Warn a player
-    aliases: [wwarn]
   kick:
     description: Kick a player
-    aliases: [wkick]
   unban:
     description: Unban a player
     aliases: [pardon]
